@@ -148,8 +148,8 @@ module tb_fft;
     display_twiddle_factors();
     display_stages_outputs();
 
-#20;
-        // Apply test vector (Q7.5 format)
+    #20;
+    // Apply test vector (Q7.5 format)
     in0_tb_r = $rtoi(0.0 * (1 << WI_FRAC));
     in0_tb_i = 0;
     in1_tb_r = 1 << WI_FRAC;
@@ -170,11 +170,93 @@ module tb_fft;
     display_twiddle_factors();
     display_stages_outputs();
 
+    #20;
+
+/* From Matlab
     
-    #40; // Wait for pipeline to fill
+================ Test Input 964 ================
+Input x(n):
+  Columns 1 through 5
+   1.4688 + 5.4688i -19.9062 - 1.9531i   7.6719 - 7.3750i  -5.3125 + 9.7812i  -1.5312 -21.4531i
+  Columns 6 through 8
+  11.4375 -16.5000i  -6.1250 + 6.0000i  -2.6875 -19.5156i
+
+          DataTypeMode: Fixed-point: binary point scaling
+            Signedness: Signed
+            WordLength: 12
+        FractionLength: 6
+Bit-reversed order:
+  Columns 1 through 5
+   1.4688 + 5.4688i  -1.5312 -21.4531i   7.6719 - 7.3750i  -6.1250 + 6.0000i -19.9062 - 1.9531i
+  Columns 6 through 8
+  11.4375 -16.5000i  -5.3125 + 9.7812i  -2.6875 -19.5156i
+
+          DataTypeMode: Fixed-point: binary point scaling
+            Signedness: Signed
+            WordLength: 12
+        FractionLength: 6
+After Stage 1:
+  Columns 1 through 5
+  -0.0625 -15.9688i   3.0000 +26.9375i   1.5625 - 1.3750i  13.8125 -13.3750i  -8.4688 -18.4375i
+  Columns 6 through 8
+ -31.3438 +14.5625i  -8.0000 - 9.7188i  -2.6250 +29.3125i
+
+          DataTypeMode: Fixed-point: binary point scaling
+            Signedness: Signed
+            WordLength: 12
+        FractionLength: 5
+After Stage 2:
+  Columns 1 through 5
+   1.5000 -17.3438i -10.3750 +13.1250i  -1.6250 -14.5938i  16.3750 +40.7500i -16.4688 -28.1562i
+  Columns 6 through 8
+  -2.0312 +17.1875i  -0.4688 - 8.7188i -60.6562 +11.9375i
+
+          DataTypeMode: Fixed-point: binary point scaling
+            Signedness: Signed
+            WordLength: 12
+        FractionLength: 5
+Final FFT Output (Stage 3):
+  Columns 1 through 5
+ -14.9375 -45.5000i   0.3125 +26.6875i -10.3125 -14.1250i  67.6875 +75.1875i  17.9375 +10.8125i
+  Columns 6 through 8
+ -21.0625 - 0.4375i   7.1250 -15.0625i -34.9375 + 6.3125i
+
+          DataTypeMode: Fixed-point: binary point scaling
+            Signedness: Signed
+            WordLength: 12
+        FractionLength: 4
+MATLAB fft(x) Output:
+  Columns 1 through 5
+
+ -14.9844 -45.5469i   0.3200 +26.7147i -10.3281 -14.1406i  67.6844 +75.1681i  17.9531 +10.8281i
+
+  Columns 6 through 8
+
+ -21.0700 - 0.4647i   7.1094 -15.0781i -34.9344 + 6.2694i*/
+    in0_tb_r = $rtoi(1.4688 * (1 << WI_FRAC));
+    in0_tb_i = $rtoi(5.4688 * (1 << WI_FRAC));
+    in1_tb_r = $rtoi(-19.9062 * (1 << WI_FRAC));
+    in1_tb_i = $rtoi(- 1.9531 * (1 << WI_FRAC));
+    in2_tb_r = $rtoi(7.6719 * (1 << WI_FRAC));
+    in2_tb_i = $rtoi(- 7.3750* (1 << WI_FRAC));
+    in3_tb_r = $rtoi(-5.3125 * (1 << WI_FRAC));
+    in3_tb_i = $rtoi(9.7812 * (1 << WI_FRAC));
+    in4_tb_r = $rtoi(-1.5312 * (1 << WI_FRAC));
+    in4_tb_i = $rtoi(-21.4531 * (1 << WI_FRAC));
+    in5_tb_r = $rtoi(11.4375 * (1 << WI_FRAC));
+    in5_tb_i = $rtoi(-16.5000 * (1 << WI_FRAC));
+    in6_tb_r = $rtoi(-6.1250 * (1 << WI_FRAC));
+    in6_tb_i = $rtoi(6.0000* (1 << WI_FRAC));
+    in7_tb_r = $rtoi(-2.6875 * (1 << WI_FRAC));
+    in7_tb_i = $rtoi(-19.5156 * (1 << WI_FRAC));
+  #40;
+    display_twiddle_factors();
+    display_stages_outputs();
+
+    #40;
     $finish;
   end
-    // Add this function to display twiddle factors
+  // Add this function to display twiddle factors
   task display_twiddle_factors;
     begin
       $display("=== TWIDDLE FACTORS (Q%0d.%0d format) ===",TW_IN, TW_FRAC);
@@ -192,34 +274,34 @@ module tb_fft;
   task display_stages_outputs;
     begin
       $display("=== STAGE1 BUTTERFLY OUTPUTS (Q%0d.%0d format) ===", DUT.butterfly1_inst.WO_INT, DUT.butterfly1_inst.WO_FRAC);
-      $display("out0 = %0d (%.4f) + j %0d (%.4f)", DUT.stage1_out0_r, fxp_to_real(DUT.stage1_out0_r,1), DUT.stage1_out0_i, fxp_to_real(DUT.stage1_out0_i,1));
-      $display("out1 = %0d (%.4f) + j %0d (%.4f)", DUT.stage1_out1_r, fxp_to_real(DUT.stage1_out1_r,1), DUT.stage1_out1_i, fxp_to_real(DUT.stage1_out1_i,1));
-      $display("out2 = %0d (%.4f) + j %0d (%.4f)", DUT.stage1_out2_r, fxp_to_real(DUT.stage1_out2_r,1), DUT.stage1_out2_i, fxp_to_real(DUT.stage1_out2_i,1));
-      $display("out3 = %0d (%.4f) + j %0d (%.4f)", DUT.stage1_out3_r, fxp_to_real(DUT.stage1_out3_r,1), DUT.stage1_out3_i, fxp_to_real(DUT.stage1_out3_i,1));
-      $display("out4 = %0d (%.4f) + j %0d (%.4f)", DUT.stage1_out4_r, fxp_to_real(DUT.stage1_out4_r,1), DUT.stage1_out4_i, fxp_to_real(DUT.stage1_out4_i,1));
-      $display("out5 = %0d (%.4f) + j %0d (%.4f)", DUT.stage1_out5_r, fxp_to_real(DUT.stage1_out5_r,1), DUT.stage1_out5_i, fxp_to_real(DUT.stage1_out5_i,1));
-      $display("out6 = %0d (%.4f) + j %0d (%.4f)", DUT.stage1_out6_r, fxp_to_real(DUT.stage1_out6_r,1), DUT.stage1_out6_i, fxp_to_real(DUT.stage1_out6_i,1));
-      $display("out7 = %0d (%.4f) + j %0d (%.4f)", DUT.stage1_out7_r, fxp_to_real(DUT.stage1_out7_r,1), DUT.stage1_out7_i, fxp_to_real(DUT.stage1_out7_i,1));
+      $display("out0 =  %.4f + j  %.4f", fxp_to_real(DUT.stage1_out0_r,1),  fxp_to_real(DUT.stage1_out0_i,1));
+      $display("out1 =  %.4f + j  %.4f", fxp_to_real(DUT.stage1_out1_r,1),  fxp_to_real(DUT.stage1_out1_i,1));
+      $display("out2 =  %.4f + j  %.4f", fxp_to_real(DUT.stage1_out2_r,1),  fxp_to_real(DUT.stage1_out2_i,1));
+      $display("out3 =  %.4f + j  %.4f", fxp_to_real(DUT.stage1_out3_r,1),  fxp_to_real(DUT.stage1_out3_i,1));
+      $display("out4 =  %.4f + j  %.4f", fxp_to_real(DUT.stage1_out4_r,1),  fxp_to_real(DUT.stage1_out4_i,1));
+      $display("out5 =  %.4f + j  %.4f", fxp_to_real(DUT.stage1_out5_r,1),  fxp_to_real(DUT.stage1_out5_i,1));
+      $display("out6 =  %.4f + j  %.4f", fxp_to_real(DUT.stage1_out6_r,1),  fxp_to_real(DUT.stage1_out6_i,1));
+      $display("out7 =  %.4f + j  %.4f", fxp_to_real(DUT.stage1_out7_r,1),  fxp_to_real(DUT.stage1_out7_i,1));
 
       $display("=== STAGE2 BUTTERFLY OUTPUTS (Q%0d.%0d format) ===", DUT.butterfly2_inst.WO_INT, DUT.butterfly2_inst.WO_FRAC);
-      $display("out0 = %0d (%.4f) + j %0d (%.4f)", DUT.stage2_out0_r, fxp_to_real(DUT.stage2_out0_r,2), DUT.stage2_out0_i, fxp_to_real(DUT.stage2_out0_i,2));
-      $display("out1 = %0d (%.4f) + j %0d (%.4f)", DUT.stage2_out1_r, fxp_to_real(DUT.stage2_out1_r,2), DUT.stage2_out1_i, fxp_to_real(DUT.stage2_out1_i,2));
-      $display("out2 = %0d (%.4f) + j %0d (%.4f)", DUT.stage2_out2_r, fxp_to_real(DUT.stage2_out2_r,2), DUT.stage2_out2_i, fxp_to_real(DUT.stage2_out2_i,2));
-      $display("out3 = %0d (%.4f) + j %0d (%.4f)", DUT.stage2_out3_r, fxp_to_real(DUT.stage2_out3_r,2), DUT.stage2_out3_i, fxp_to_real(DUT.stage2_out3_i,2));
-      $display("out4 = %0d (%.4f) + j %0d (%.4f)", DUT.stage2_out4_r, fxp_to_real(DUT.stage2_out4_r,2), DUT.stage2_out4_i, fxp_to_real(DUT.stage2_out4_i,2));
-      $display("out5 = %0d (%.4f) + j %0d (%.4f)", DUT.stage2_out5_r, fxp_to_real(DUT.stage2_out5_r,2), DUT.stage2_out5_i, fxp_to_real(DUT.stage2_out5_i,2));
-      $display("out6 = %0d (%.4f) + j %0d (%.4f)", DUT.stage2_out6_r, fxp_to_real(DUT.stage2_out6_r,2), DUT.stage2_out6_i, fxp_to_real(DUT.stage2_out6_i,2));
-      $display("out7 = %0d (%.4f) + j %0d (%.4f)", DUT.stage2_out7_r, fxp_to_real(DUT.stage2_out7_r,2), DUT.stage2_out7_i, fxp_to_real(DUT.stage2_out7_i,2));
+      $display("out0 = %.4f + j %.4f", fxp_to_real(DUT.stage2_out0_r,2),  fxp_to_real(DUT.stage2_out0_i,2));
+      $display("out1 = %.4f + j %.4f", fxp_to_real(DUT.stage2_out1_r,2),  fxp_to_real(DUT.stage2_out1_i,2));
+      $display("out2 = %.4f + j %.4f", fxp_to_real(DUT.stage2_out2_r,2),  fxp_to_real(DUT.stage2_out2_i,2));
+      $display("out3 = %.4f + j %.4f", fxp_to_real(DUT.stage2_out3_r,2),  fxp_to_real(DUT.stage2_out3_i,2));
+      $display("out4 = %.4f + j %.4f", fxp_to_real(DUT.stage2_out4_r,2),  fxp_to_real(DUT.stage2_out4_i,2));
+      $display("out5 = %.4f + j %.4f", fxp_to_real(DUT.stage2_out5_r,2),  fxp_to_real(DUT.stage2_out5_i,2));
+      $display("out6 = %.4f + j %.4f", fxp_to_real(DUT.stage2_out6_r,2),  fxp_to_real(DUT.stage2_out6_i,2));
+      $display("out7 = %.4f + j %.4f", fxp_to_real(DUT.stage2_out7_r,2),  fxp_to_real(DUT.stage2_out7_i,2));
 
       $display("=== STAGE3 BUTTERFLY OUTPUTS (Q%0d.%0d format) ===", DUT.butterfly3_inst.WO_INT, DUT.butterfly3_inst.WO_FRAC);
-      $display("out0 = %0d (%.4f) + j %0d (%.4f)", DUT.stage3_out0_r, fxp_to_real(DUT.stage3_out0_r,3), DUT.stage2_out0_i, fxp_to_real(DUT.stage3_out0_i,3));
-      $display("out1 = %0d (%.4f) + j %0d (%.4f)", DUT.stage3_out1_r, fxp_to_real(DUT.stage3_out1_r,3), DUT.stage2_out1_i, fxp_to_real(DUT.stage3_out1_i,3));
-      $display("out2 = %0d (%.4f) + j %0d (%.4f)", DUT.stage3_out2_r, fxp_to_real(DUT.stage3_out2_r,3), DUT.stage2_out2_i, fxp_to_real(DUT.stage3_out2_i,3));
-      $display("out3 = %0d (%.4f) + j %0d (%.4f)", DUT.stage3_out3_r, fxp_to_real(DUT.stage3_out3_r,3), DUT.stage2_out3_i, fxp_to_real(DUT.stage3_out3_i,3));
-      $display("out4 = %0d (%.4f) + j %0d (%.4f)", DUT.stage3_out4_r, fxp_to_real(DUT.stage3_out4_r,3), DUT.stage2_out4_i, fxp_to_real(DUT.stage3_out4_i,3));
-      $display("out5 = %0d (%.4f) + j %0d (%.4f)", DUT.stage3_out5_r, fxp_to_real(DUT.stage3_out5_r,3), DUT.stage2_out5_i, fxp_to_real(DUT.stage3_out5_i,3));
-      $display("out6 = %0d (%.4f) + j %0d (%.4f)", DUT.stage3_out6_r, fxp_to_real(DUT.stage3_out6_r,3), DUT.stage2_out6_i, fxp_to_real(DUT.stage3_out6_i,3));
-      $display("out7 = %0d (%.4f) + j %0d (%.4f)", DUT.stage3_out7_r, fxp_to_real(DUT.stage3_out7_r,3), DUT.stage2_out7_i, fxp_to_real(DUT.stage3_out7_i,3));
+      $display("out0 = %.4f + j %.4f", fxp_to_real(DUT.stage3_out0_r,3), fxp_to_real(DUT.stage3_out0_i,3));
+      $display("out1 = %.4f + j %.4f", fxp_to_real(DUT.stage3_out1_r,3), fxp_to_real(DUT.stage3_out1_i,3));
+      $display("out2 = %.4f + j %.4f", fxp_to_real(DUT.stage3_out2_r,3), fxp_to_real(DUT.stage3_out2_i,3));
+      $display("out3 = %.4f + j %.4f", fxp_to_real(DUT.stage3_out3_r,3), fxp_to_real(DUT.stage3_out3_i,3));
+      $display("out4 = %.4f + j %.4f", fxp_to_real(DUT.stage3_out4_r,3), fxp_to_real(DUT.stage3_out4_i,3));
+      $display("out5 = %.4f + j %.4f", fxp_to_real(DUT.stage3_out5_r,3), fxp_to_real(DUT.stage3_out5_i,3));
+      $display("out6 = %.4f + j %.4f", fxp_to_real(DUT.stage3_out6_r,3), fxp_to_real(DUT.stage3_out6_i,3));
+      $display("out7 = %.4f + j %.4f", fxp_to_real(DUT.stage3_out7_r,3), fxp_to_real(DUT.stage3_out7_i,3));
     end
   endtask
 endmodule
