@@ -1,0 +1,208 @@
+m255
+K4
+z2
+13
+!s112 1.1
+!i10d 8192
+!i10e 25
+!i10f 100
+cModel Technology
+dD:/FFT2
+T_opt
+!s110 1755393719
+VAE4`AS9:TgNTk0?NH[?1f0
+04 6 4 work tb_fft fast 0
+=1-841b77d6ef2f-68a12eb7-2e4-2f88
+o-quiet -auto_acc_if_foreign -work work +acc
+Z0 tCvgOpt 0
+n@_opt
+OL;O;10.7c;67
+vbit_reversal
+Z1 !s110 1755393716
+!i10b 1
+!s100 XLA6zdCS4bhRoI_eY[6MX1
+I5[?a59SMgX:T8AR7UHWED1
+Z2 VDg1SIo80bB@j0V0VzS_@n1
+Z3 dD:/FFT_new
+w1755381987
+8bit_reversal.v
+Fbit_reversal.v
+L0 1
+Z4 OL;L;10.7c;67
+r1
+!s85 0
+31
+Z5 !s108 1755393716.000000
+Z6 !s107 fx_mul.v|fx_format.v|fx_addsub.v|bit_reversal.v|FFT_top.v|FFT_tb.v|Butterfly_stage3.v|Butterfly_stage2.v|Butterfly_stage1.v|
+Z7 !s90 -reportprogress|300|Butterfly_stage1.v|Butterfly_stage2.v|Butterfly_stage3.v|FFT_tb.v|FFT_top.v|bit_reversal.v|fx_addsub.v|fx_format.v|fx_mul.v|
+!i113 0
+Z8 o-L mtiAvm -L mtiRnm -L mtiOvm -L mtiUvm -L mtiUPF -L infact
+R0
+vfft_top
+R1
+!i10b 1
+!s100 [lXEnT1VF^EMl[RmkE=c]0
+IC36Vn?:1Jmn5^GY3UNo5f3
+R2
+R3
+w1755391896
+8FFT_top.v
+FFFT_top.v
+L0 1
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!i113 0
+R8
+R0
+vfxp_addsub
+R1
+!i10b 1
+!s100 ^n6jkiHZ67hiSQVe@AWcI2
+I?J2Dg_gZ[^3PG9_Fb:ETn2
+R2
+R3
+w1755385330
+8fx_addsub.v
+Ffx_addsub.v
+L0 17
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!i113 0
+R8
+R0
+vfxp_multiplier
+R1
+!i10b 1
+!s100 B];SD_192Y?ddVNVenXnm3
+I^cYBLCRPG2ZV[[MmDoT`Y1
+R2
+R3
+w1755391747
+8fx_mul.v
+Ffx_mul.v
+L0 23
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!i113 0
+R8
+R0
+vfxp_zoom
+R1
+!i10b 1
+!s100 h0gP?nQ3B0EJeD4XX9L[D3
+I<>[czNdj5[`Q6f@Yi07A?1
+R2
+R3
+w1755380983
+8fx_format.v
+Ffx_format.v
+L0 7
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!i113 0
+R8
+R0
+vstage1_butterfly
+R1
+!i10b 1
+!s100 j>k^BDi`87BKD?QQi>9gS1
+I>bG?3ZAYoLBNQYgkH@8PO0
+R2
+R3
+w1755385429
+8Butterfly_stage1.v
+FButterfly_stage1.v
+L0 1
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!i113 0
+R8
+R0
+vstage2_butterfly
+R1
+!i10b 1
+!s100 35Iib2no1Q2dZ1m@H4`Km1
+I5P?AL^k;eIgaJIDI8FLId1
+R2
+R3
+w1755389861
+8Butterfly_stage2.v
+FButterfly_stage2.v
+L0 1
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!i113 0
+R8
+R0
+vstage3_butterfly
+R1
+!i10b 1
+!s100 44S:d_Ro;EOLjfX:L[9dG1
+I6057E`QP<?>c;Y^zSf`h=3
+R2
+R3
+w1755393614
+8Butterfly_stage3.v
+FButterfly_stage3.v
+L0 10
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!i113 0
+R8
+R0
+vtb_fft
+R1
+!i10b 1
+!s100 6U2<g9VB0dYPV6fXj:[YW1
+IC2oQDECJgK0:9o[PDX]XV1
+R2
+R3
+w1755393712
+8FFT_tb.v
+FFFT_tb.v
+L0 2
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!i113 0
+R8
+R0
