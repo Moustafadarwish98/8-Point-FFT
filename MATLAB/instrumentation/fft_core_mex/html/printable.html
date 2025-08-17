@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head>
+<h1>Instrumentation Results for fft_core_mex</h1>
+<h2>Summary</h2>
+<p>To re-create this report:</p>
+<pre>  showInstrumentationResults fft_core_mex</pre>
+
+<p>MEX-function name:</p>
+<pre>fft_core_mex</pre>
+<p>Timestamp:</p>
+<pre>Sun Aug 17 04:50:28 2025</pre>
+<p>To open this report from the MATLAB command line:</p>
+<pre> web('-browser','D:\ADI intership\FFT\instrumentation\fft_core_mex\html\printable.html')</pre>
+
+
+<h2>Function fft_core </h2>
+
+<pre>
+function Xk = fft_core(x_in) %#codegen
+% 8-point FFT core, radix-2 DIT
+% Fixed-point 
+
+    % ---- Type table ----
+    T = fft_core_types('fixed');
+
+    % ---- Validate length ----
+    N = length(x_in);
+    if N ~= 8
+        coder.internal.error('fft_core:InvalidLength', ...
+            'This FFT only supports 8-point input.');
+    end
+
+    % ---- Twiddle factors ----
+    W = T.W; % fixed-point twiddle array
+    for k = 0:N-1
+        W(k+1) = fi(exp(-1j * 2 * pi * k / N), ...
+                    numerictype(W), fimath(W));
+    end
+
+    fprintf('Input x(n):\n');
+    disp(x_in);
+
+    % ---- Bit reversal ----
+    x = bit_reversal_zero_based(x_in, T.x); % keep fixed-point type
+    fprintf('Bit-reversed order:\n');
+    disp(x);
+
+    % ---- Stage 1 ----
+    s1 = T.s1;
+    s1(1) = x(1) + x(2);
+    s1(2) = x(1) - x(2);
+    s1(3) = x(3) + x(4);
+    s1(4) = x(3) - x(4);
+    s1(5) = x(5) + x(6);
+    s1(6) = x(5) - x(6);
+    s1(7) = x(7) + x(8);
+    s1(8) = x(7) - x(8);
+    fprintf('After Stage 1:\n');
+    disp(s1);
+
+    % ---- Stage 2 ----
+    s2 = T.s2;
+    s2(1) = s1(1) + W(1) * s1(3);
+    s2(3) = s1(1) - W(1) * s1(3);
+    s2(2) = s1(2) + W(3) * s1(4);
+    s2(4) = s1(2) - W(3) * s1(4);
+    s2(5) = s1(5) + W(1) * s1(7);
+    s2(7) = s1(5) - W(1) * s1(7);
+    s2(6) = s1(6) + W(3) * s1(8);
+    s2(8) = s1(6) - W(3) * s1(8);
+    fprintf('After Stage 2:\n');
+    disp(s2);
+
+    % ---- Stage 3 ----
+    s3 = T.s3;
+    s3(1) = s2(1) + W(1) * s2(5);
+    s3(5) = s2(1) - W(1) * s2(5);
+    s3(2) = s2(2) + W(2) * s2(6);
+    s3(6) = s2(2) - W(2) * s2(6);
+    s3(3) = s2(3) + W(3) * s2(7);
+    s3(7) = s2(3) - W(3) * s2(7);
+    s3(4) = s2(4) + W(4) * s2(8);
+    s3(8) = s2(4) - W(4) * s2(8);
+    fprintf('Final FFT Output (Stage 3):\n');
+    disp(s3);
+
+    % ---- Output ----
+    Xk = cast(s3, 'like', T.Xk);
+
+end
+</pre>
+<table style="border-collapse: collapse; border: solid;" border="1">
+<caption><b>Logged Variables for fft_core</b></caption>
+<tr><th>Variable</th><th>Type</th><th>Size</th><th>Class</th><th>Complex</th><th>Signedness</th><th>WL</th><th>FL</th><th>Percent of<br>Current Range</th><th>Always<br>Whole Number</th><th>SimMin</th><th>SimMax</th></tr>
+<tr><td><code>N</code></td><td><code>Local</code></td><td><code>1&nbsp;x&nbsp;1</code></td><td><code>double</code></td><td><code>No</code></td><td><code></code></td><td><code></code></td><td><code></code></td><td><code></code></td><td><code><b>Yes</b></code></td><td><code>8</code></td><td><code>8</code></td></tr>
+<tr><td><code>T</code></td><td><code>Local</code></td><td><code>1&nbsp;x&nbsp;1</code></td><td><code>struct</code></td><td><code></code></td><td><code></code></td><td><code></code></td><td><code></code></td><td><code></code></td><td><code></code></td><td><code></code></td><td><code></code></td></tr>
+<tr><td><code>T.x_in</code></td><td><code>Field</code></td><td><code>1&nbsp;x&nbsp;8</code></td><td><code>embedded.fi</code></td><td><code>Yes</code></td><td><code>Signed</code></td><td><code>12</code></td><td><code>6</code></td><td><code>0</code></td><td><code><b>Yes</b></code></td><td><code>0</code></td><td><code>0</code></td></tr>
+<tr><td><code>T.Xk</code></td><td><code>Field</code></td><td><code>1&nbsp;x&nbsp;8</code></td><td><code>embedded.fi</code></td><td><code>Yes</code></td><td><code>Signed</code></td><td><code>12</code></td><td><code>4</code></td><td><code>0</code></td><td><code><b>Yes</b></code></td><td><code>0</code></td><td><code>0</code></td></tr>
+<tr><td><code>T.s1</code></td><td><code>Field</code></td><td><code>1&nbsp;x&nbsp;8</code></td><td><code>embedded.fi</code></td><td><code>Yes</code></td><td><code>Signed</code></td><td><code>12</code></td><td><code>5</code></td><td><code>0</code></td><td><code><b>Yes</b></code></td><td><code>0</code></td><td><code>0</code></td></tr>
+<tr><td><code>T.s2</code></td><td><code>Field</code></td><td><code>1&nbsp;x&nbsp;8</code></td><td><code>embedded.fi</code></td><td><code>Yes</code></td><td><code>Signed</code></td><td><code>12</code></td><td><code>5</code></td><td><code>0</code></td><td><code><b>Yes</b></code></td><td><code>0</code></td><td><code>0</code></td></tr>
+<tr><td><code>T.s3</code></td><td><code>Field</code></td><td><code>1&nbsp;x&nbsp;8</code></td><td><code>embedded.fi</code></td><td><code>Yes</code></td><td><code>Signed</code></td><td><code>12</code></td><td><code>4</code></td><td><code>0</code></td><td><code><b>Yes</b></code></td><td><code>0</code></td><td><code>0</code></td></tr>
+<tr><td><code>T.W</code></td><td><code>Field</code></td><td><code>1&nbsp;x&nbsp;8</code></td><td><code>embedded.fi</code></td><td><code>Yes</code></td><td><code>Signed</code></td><td><code>12</code></td><td><code>11</code></td><td><code>0</code></td><td><code><b>Yes</b></code></td><td><code>0</code></td><td><code>0</code></td></tr>
+<tr><td><code>T.x</code></td><td><code>Field</code></td><td><code>1&nbsp;x&nbsp;8</code></td><td><code>embedded.fi</code></td><td><code>Yes</code></td><td><code>Signed</code></td><td><code>12</code></td><td><code>6</code></td><td><code>0</code></td><td><code><b>Yes</b></code></td><td><code>0</code></td><td><code>0</code></td></tr>
+<tr><td><code>T.k</code></td><td><code>Field</code></td><td><code>1&nbsp;x&nbsp;1</code></td><td><code>embedded.fi</code></td><td><code>No</code></td><td><code>Signed</code></td><td><code>12</code></td><td><code>0</code></td><td><code>0</code></td><td><code><b>Yes</b></code></td><td><code>0</code></td><td><code>0</code></td></tr>
+<tr><td><code>T.N</code></td><td><code>Field</code></td><td><code>1&nbsp;x&nbsp;1</code></td><td><code>embedded.fi</code></td><td><code>No</code></td><td><code>Signed</code></td><td><code>12</code></td><td><code>0</code></td><td><code>< 1</code></td><td><code><b>Yes</b></code></td><td><code>8</code></td><td><code>8</code></td></tr>
+<tr><td><code>W</code></td><td><code>Local</code></td><td><code>1&nbsp;x&nbsp;8</code></td><td><code>embedded.fi</code></td><td><code>Yes</code></td><td><code>Signed</code></td><td><code>12</code></td><td><code>11</code></td><td><code><span style="background-color: yellow"><span style="color: black"><b>100</b></span></span></code></td><td><code>No</code></td><td><code>-1</code></td><td><code>0.99951171875</code></td></tr>
+<tr><td><code>Xk</code></td><td><code>Output</code></td><td><code>1&nbsp;x&nbsp;8</code></td><td><code>embedded.fi</code></td><td><code>Yes</code></td><td><code>Signed</code></td><td><code>12</code></td><td><code>4</code></td><td><code>84</code></td><td><code>No</code></td><td><code>-107</code></td><td><code>104.75</code></td></tr>
+<tr><td><code>k</code></td><td><code>Local</code></td><td><code>1&nbsp;x&nbsp;1</code></td><td><code>double</code></td><td><code>No</code></td><td><code></code></td><td><code></code></td><td><code></code></td><td><code></code></td><td><code><b>Yes</b></code></td><td><code>0</code></td><td><code>7</code></td></tr>
+<tr><td><code>s1</code></td><td><code>Local</code></td><td><code>1&nbsp;x&nbsp;8</code></td><td><code>embedded.fi</code></td><td><code>Yes</code></td><td><code>Signed</code></td><td><code>12</code></td><td><code>5</code></td><td><code>84</code></td><td><code>No</code></td><td><code>-52.96875</code></td><td><code>53.3125</code></td></tr>
+<tr><td><code>s2</code></td><td><code>Local</code></td><td><code>1&nbsp;x&nbsp;8</code></td><td><code>embedded.fi</code></td><td><code>Yes</code></td><td><code>Signed</code></td><td><code>12</code></td><td><code>5</code></td><td><code><span style="background-color: yellow"><span style="color: black"><b>100</b></span></span></code></td><td><code>No</code></td><td><code>-64</code></td><td><code>63.96875</code></td></tr>
+<tr><td><code>s3</code></td><td><code>Local</code></td><td><code>1&nbsp;x&nbsp;8</code></td><td><code>embedded.fi</code></td><td><code>Yes</code></td><td><code>Signed</code></td><td><code>12</code></td><td><code>4</code></td><td><code>84</code></td><td><code>No</code></td><td><code>-107</code></td><td><code>104.75</code></td></tr>
+<tr><td><code>x</code></td><td><code>Local</code></td><td><code>1&nbsp;x&nbsp;8</code></td><td><code>embedded.fi</code></td><td><code>Yes</code></td><td><code>Signed</code></td><td><code>12</code></td><td><code>6</code></td><td><code><span style="background-color: yellow"><span style="color: black"><b>100</b></span></span></code></td><td><code>No</code></td><td><code>-32</code></td><td><code>31.984375</code></td></tr>
+<tr><td><code>x_in</code></td><td><code>Input</code></td><td><code>1&nbsp;x&nbsp;8</code></td><td><code>embedded.fi</code></td><td><code>Yes</code></td><td><code>Signed</code></td><td><code>12</code></td><td><code>6</code></td><td><code><span style="background-color: yellow"><span style="color: black"><b>100</b></span></span></code></td><td><code>No</code></td><td><code>-32</code></td><td><code>31.984375</code></td></tr>
+</table>
+
+<h2>Function fft_core_types </h2>
+
+<pre>
+function T = fft_core_types(dt)
+% fft_core_types  Type table for fft_core function (fixed-point setup, 12-bit total)
+
+switch dt
+    case 'double'
+        % Double precision (for floating-point reference runs)
+        T.x = complex(double(zeros(1,8)), double(zeros(1,8)));
+        
+    case 'single'
+        % Single precision
+        T.x = complex(single(zeros(1,8)), single(zeros(1,8)));
+        
+    case 'fixed'
+        % ===== Fixed-point definitions =====
+        % Format: numerictype(signed, total_bits, fractional_bits)
+        WL = 12;  % total word length in bits
+        
+        % ---- Integer bits from simulation results ----
+        IB_Xk   = 8;  
+        IB_x_in = 6;
+        IB_s1   = 7;
+        IB_s2   = 7;
+        IB_s3   = 8;
+        IB_W    = 1;
+        IB_x    = 6;
+        
+        % ---- Define each variable ----
+        T.x_in  = fi(complex(zeros(1,8)), 1, WL, WL - IB_x_in);
+        T.Xk    = fi(complex(zeros(1,8)), 1, WL, WL - IB_Xk);
+        T.s1    = fi(complex(zeros(1,8)), 1, WL, WL - IB_s1);
+        T.s2    = fi(complex(zeros(1,8)), 1, WL, WL - IB_s2);
+        T.s3    = fi(complex(zeros(1,8)), 1, WL, WL - IB_s3);
+        T.W     = fi(complex(zeros(1,8)), 1, WL, WL - IB_W);
+        T.x     = fi(complex(zeros(1,8)), 1, WL, WL - IB_x);
+        
+        % Scalars
+        T.k     = fi(0, 1, WL, 0);    % integer index
+        T.N     = fi(8, 1, WL, 0);    % constant
+        
+    otherwise
+        error('Unsupported data type: %s', dt);
+end
+end
+</pre>
+<table style="border-collapse: collapse; border: solid;" border="1">
+<caption><b>Logged Variables for fft_core_types</b></caption>
+<tr><th>Variable</th><th>Type</th><th>Size</th><th>Class</th><th>Complex</th><th>Signedness</th><th>WL</th><th>FL</th><th>Percent of<br>Current Range</th><th>Always<br>Whole Number</th><th>SimMin</th><th>SimMax</th></tr>
+<tr><td><code>IB_W</code></td><td><code>Local</code></td><td><code>1&nbsp;x&nbsp;1</code></td><td><code>double</code></td><td><code>No</code></td><td><code></code></td><td><code></code></td><td><code></code></td><td><code></code></td><td><code><b>Yes</b></code></td><td><code>1</code></td><td><code>1</code></td></tr>
+<tr><td><code>IB_Xk</code></td><td><code>Local</code></td><td><code>1&nbsp;x&nbsp;1</code></td><td><code>double</code></td><td><code>No</code></td><td><code></code></td><td><code></code></td><td><code></code></td><td><code></code></td><td><code><b>Yes</b></code></td><td><code>8</code></td><td><code>8</code></td></tr>
+<tr><td><code>IB_s1</code></td><td><code>Local</code></td><td><code>1&nbsp;x&nbsp;1</code></td><td><code>double</code></td><td><code>No</code></td><td><code></code></td><td><code></code></td><td><code></code></td><td><code></code></td><td><code><b>Yes</b></code></td><td><code>7</code></td><td><code>7</code></td></tr>
+<tr><td><code>IB_s2</code></td><td><code>Local</code></td><td><code>1&nbsp;x&nbsp;1</code></td><td><code>double</code></td><td><code>No</code></td><td><code></code></td><td><code></code></td><td><code></code></td><td><code></code></td><td><code><b>Yes</b></code></td><td><code>7</code></td><td><code>7</code></td></tr>
+<tr><td><code>IB_s3</code></td><td><code>Local</code></td><td><code>1&nbsp;x&nbsp;1</code></td><td><code>double</code></td><td><code>No</code></td><td><code></code></td><td><code></code></td><td><code></code></td><td><code></code></td><td><code><b>Yes</b></code></td><td><code>8</code></td><td><code>8</code></td></tr>
+<tr><td><code>IB_x</code></td><td><code>Local</code></td><td><code>1&nbsp;x&nbsp;1</code></td><td><code>double</code></td><td><code>No</code></td><td><code></code></td><td><code></code></td><td><code></code></td><td><code></code></td><td><code><b>Yes</b></code></td><td><code>6</code></td><td><code>6</code></td></tr>
+<tr><td><code>IB_x_in</code></td><td><code>Local</code></td><td><code>1&nbsp;x&nbsp;1</code></td><td><code>double</code></td><td><code>No</code></td><td><code></code></td><td><code></code></td><td><code></code></td><td><code></code></td><td><code><b>Yes</b></code></td><td><code>6</code></td><td><code>6</code></td></tr>
+<tr><td><code>T</code></td><td><code>Output</code></td><td><code>1&nbsp;x&nbsp;1</code></td><td><code>struct</code></td><td><code></code></td><td><code></code></td><td><code></code></td><td><code></code></td><td><code></code></td><td><code></code></td><td><code></code></td><td><code></code></td></tr>
+<tr><td><code>T.x_in</code></td><td><code>Field</code></td><td><code>1&nbsp;x&nbsp;8</code></td><td><code>embedded.fi</code></td><td><code>Yes</code></td><td><code>Signed</code></td><td><code>12</code></td><td><code>6</code></td><td><code>0</code></td><td><code><b>Yes</b></code></td><td><code>0</code></td><td><code>0</code></td></tr>
+<tr><td><code>T.Xk</code></td><td><code>Field</code></td><td><code>1&nbsp;x&nbsp;8</code></td><td><code>embedded.fi</code></td><td><code>Yes</code></td><td><code>Signed</code></td><td><code>12</code></td><td><code>4</code></td><td><code>0</code></td><td><code><b>Yes</b></code></td><td><code>0</code></td><td><code>0</code></td></tr>
+<tr><td><code>T.s1</code></td><td><code>Field</code></td><td><code>1&nbsp;x&nbsp;8</code></td><td><code>embedded.fi</code></td><td><code>Yes</code></td><td><code>Signed</code></td><td><code>12</code></td><td><code>5</code></td><td><code>0</code></td><td><code><b>Yes</b></code></td><td><code>0</code></td><td><code>0</code></td></tr>
+<tr><td><code>T.s2</code></td><td><code>Field</code></td><td><code>1&nbsp;x&nbsp;8</code></td><td><code>embedded.fi</code></td><td><code>Yes</code></td><td><code>Signed</code></td><td><code>12</code></td><td><code>5</code></td><td><code>0</code></td><td><code><b>Yes</b></code></td><td><code>0</code></td><td><code>0</code></td></tr>
+<tr><td><code>T.s3</code></td><td><code>Field</code></td><td><code>1&nbsp;x&nbsp;8</code></td><td><code>embedded.fi</code></td><td><code>Yes</code></td><td><code>Signed</code></td><td><code>12</code></td><td><code>4</code></td><td><code>0</code></td><td><code><b>Yes</b></code></td><td><code>0</code></td><td><code>0</code></td></tr>
+<tr><td><code>T.W</code></td><td><code>Field</code></td><td><code>1&nbsp;x&nbsp;8</code></td><td><code>embedded.fi</code></td><td><code>Yes</code></td><td><code>Signed</code></td><td><code>12</code></td><td><code>11</code></td><td><code>0</code></td><td><code><b>Yes</b></code></td><td><code>0</code></td><td><code>0</code></td></tr>
+<tr><td><code>T.x</code></td><td><code>Field</code></td><td><code>1&nbsp;x&nbsp;8</code></td><td><code>embedded.fi</code></td><td><code>Yes</code></td><td><code>Signed</code></td><td><code>12</code></td><td><code>6</code></td><td><code>0</code></td><td><code><b>Yes</b></code></td><td><code>0</code></td><td><code>0</code></td></tr>
+<tr><td><code>T.k</code></td><td><code>Field</code></td><td><code>1&nbsp;x&nbsp;1</code></td><td><code>embedded.fi</code></td><td><code>No</code></td><td><code>Signed</code></td><td><code>12</code></td><td><code>0</code></td><td><code>0</code></td><td><code><b>Yes</b></code></td><td><code>0</code></td><td><code>0</code></td></tr>
+<tr><td><code>T.N</code></td><td><code>Field</code></td><td><code>1&nbsp;x&nbsp;1</code></td><td><code>embedded.fi</code></td><td><code>No</code></td><td><code>Signed</code></td><td><code>12</code></td><td><code>0</code></td><td><code>< 1</code></td><td><code><b>Yes</b></code></td><td><code>8</code></td><td><code>8</code></td></tr>
+<tr><td><code>WL</code></td><td><code>Local</code></td><td><code>1&nbsp;x&nbsp;1</code></td><td><code>double</code></td><td><code>No</code></td><td><code></code></td><td><code></code></td><td><code></code></td><td><code></code></td><td><code><b>Yes</b></code></td><td><code>12</code></td><td><code>12</code></td></tr>
+</table>
+
+<h2>Function bit_reversal_zero_based </h2>
+
+<pre>
+function x_reordered = bit_reversal_zero_based(x_in, xtype)
+    N = length(x_in);
+    num_bits = log2(N);
+    x_reordered = xtype; % preserve fixed-point type
+    for n = 0:N-1
+        bin_str = dec2bin(n, num_bits);
+        bin_rev = bin_str(end:-1:1);
+        rev_n   = bin2dec(bin_rev);
+        x_reordered(rev_n + 1) = x_in(n + 1);
+    end
+end
+</pre>
+<table style="border-collapse: collapse; border: solid;" border="1">
+<caption><b>Logged Variables for bit_reversal_zero_based</b></caption>
+<tr><th>Variable</th><th>Type</th><th>Size</th><th>Class</th><th>Complex</th><th>Signedness</th><th>WL</th><th>FL</th><th>Percent of<br>Current Range</th><th>Always<br>Whole Number</th><th>SimMin</th><th>SimMax</th></tr>
+<tr><td><code>N</code></td><td><code>Local</code></td><td><code>1&nbsp;x&nbsp;1</code></td><td><code>double</code></td><td><code>No</code></td><td><code></code></td><td><code></code></td><td><code></code></td><td><code></code></td><td><code><b>Yes</b></code></td><td><code>8</code></td><td><code>8</code></td></tr>
+<tr><td><code>n</code></td><td><code>Local</code></td><td><code>1&nbsp;x&nbsp;1</code></td><td><code>double</code></td><td><code>No</code></td><td><code></code></td><td><code></code></td><td><code></code></td><td><code></code></td><td><code><b>Yes</b></code></td><td><code>0</code></td><td><code>7</code></td></tr>
+<tr><td><code>num_bits</code></td><td><code>Local</code></td><td><code>1&nbsp;x&nbsp;1</code></td><td><code>double</code></td><td><code>No</code></td><td><code></code></td><td><code></code></td><td><code></code></td><td><code></code></td><td><code><b>Yes</b></code></td><td><code>3</code></td><td><code>3</code></td></tr>
+<tr><td><code>rev_n</code></td><td><code>Local</code></td><td><code>1&nbsp;x&nbsp;1</code></td><td><code>double</code></td><td><code>No</code></td><td><code></code></td><td><code></code></td><td><code></code></td><td><code></code></td><td><code><b>Yes</b></code></td><td><code>0</code></td><td><code>7</code></td></tr>
+<tr><td><code>x_in</code></td><td><code>Input</code></td><td><code>1&nbsp;x&nbsp;8</code></td><td><code>embedded.fi</code></td><td><code>Yes</code></td><td><code>Signed</code></td><td><code>12</code></td><td><code>6</code></td><td><code><span style="background-color: yellow"><span style="color: black"><b>100</b></span></span></code></td><td><code>No</code></td><td><code>-32</code></td><td><code>31.984375</code></td></tr>
+<tr><td><code>x_reordered</code></td><td><code>Output</code></td><td><code>1&nbsp;x&nbsp;8</code></td><td><code>embedded.fi</code></td><td><code>Yes</code></td><td><code>Signed</code></td><td><code>12</code></td><td><code>6</code></td><td><code><span style="background-color: yellow"><span style="color: black"><b>100</b></span></span></code></td><td><code>No</code></td><td><code>-32</code></td><td><code>31.984375</code></td></tr>
+<tr><td><code>xtype</code></td><td><code>Input</code></td><td><code>1&nbsp;x&nbsp;8</code></td><td><code>embedded.fi</code></td><td><code>Yes</code></td><td><code>Signed</code></td><td><code>12</code></td><td><code>6</code></td><td><code>0</code></td><td><code><b>Yes</b></code></td><td><code>0</code></td><td><code>0</code></td></tr>
+</table>
+</html>
