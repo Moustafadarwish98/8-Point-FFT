@@ -18,7 +18,7 @@ module stage3_butterfly #(
   parameter TW_INT  = 2,                       // twiddle integer bits (Q2.10)
   parameter TW_FRAC = 10,
   parameter ROUND   = 1                        // rounding on final zoom
-)(
+)( /* ports same as before */ 
   input  wire signed [IP_WIDTH-1:0] in0_r,
   input  wire signed [IP_WIDTH-1:0] in1_r,
   input  wire signed [IP_WIDTH-1:0] in2_r,
@@ -87,29 +87,20 @@ module stage3_butterfly #(
   // naming: p_<group>_<term>
   // term: ar_cr (a_r*tw_r), ai_di (a_i*tw_i), ar_di (a_r*tw_i), ai_cr (a_i*tw_r)
   // ------------------------------------------------------------------
-  // Group 0 (a=in0, b=in4) products
-  wire signed [PROD_W-1:0] p0_ar_cr;
-  wire signed [PROD_W-1:0] p0_ai_di;
-  wire signed [PROD_W-1:0] p0_ar_di;
-  wire signed [PROD_W-1:0] p0_ai_cr;
+  // --- GROUP 0 (twiddle = 1 + j0) handled WITHOUT multipliers ----
+  // For twiddle = 1:
+  //   p0_ar_cr = in4_r * 1
+  //   p0_ai_cr = in4_imag * 1
+  //   p0_ai_di = 0
+  //   p0_ar_di = 0
+  // We produce these at the product Q scale by sign-extending and left-shifting
+  // the input (Q7.5 -> Q9.15) so downstream subtraction/addition stays identical.
+  wire signed [PROD_W-1:0] p0_ar_cr = $signed({{(PROD_W-IP_WIDTH){in4_r[IP_WIDTH-1]}}, in4_r}) <<< (PROD_FRAC - WI_FRAC);
+  wire signed [PROD_W-1:0] p0_ai_cr = $signed({{(PROD_W-IP_WIDTH){in4_imag[IP_WIDTH-1]}}, in4_imag}) <<< (PROD_FRAC - WI_FRAC);
+  wire signed [PROD_W-1:0] p0_ai_di = {PROD_W{1'b0}};
+  wire signed [PROD_W-1:0] p0_ar_di = {PROD_W{1'b0}};
 
-  fxp_multiplier #(.A_INT(WI_INT), .A_FRAC(WI_FRAC), .B_INT(TW_INT), .B_FRAC(TW_FRAC),
-            .OUT_INT(PROD_INT), .OUT_FRAC(PROD_FRAC), .ROUNDING(ROUND))
-    mul0_ar_cr (.operand_a(in4_r), .operand_b(tw0_r), .result(p0_ar_cr), .overflow());
-
-  fxp_multiplier #(.A_INT(WI_INT), .A_FRAC(WI_FRAC), .B_INT(TW_INT), .B_FRAC(TW_FRAC),
-            .OUT_INT(PROD_INT), .OUT_FRAC(PROD_FRAC), .ROUNDING(ROUND))
-    mul0_ai_di (.operand_a(in4_imag), .operand_b(tw0_i), .result(p0_ai_di), .overflow());
-
-  fxp_multiplier #(.A_INT(WI_INT), .A_FRAC(WI_FRAC), .B_INT(TW_INT), .B_FRAC(TW_FRAC),
-            .OUT_INT(PROD_INT), .OUT_FRAC(PROD_FRAC), .ROUNDING(ROUND))
-    mul0_ar_di (.operand_a(in4_r), .operand_b(tw0_i), .result(p0_ar_di), .overflow());
-
-  fxp_multiplier #(.A_INT(WI_INT), .A_FRAC(WI_FRAC), .B_INT(TW_INT), .B_FRAC(TW_FRAC),
-            .OUT_INT(PROD_INT), .OUT_FRAC(PROD_FRAC), .ROUNDING(ROUND))
-    mul0_ai_cr (.operand_a(in4_imag), .operand_b(tw0_r), .result(p0_ai_cr), .overflow());
-
-  // Group 1 (a=in1, b=in5)
+  // Group 1 (a=in1, b=in5) - general multipliers (unchanged)
   wire signed [PROD_W-1:0] p1_ar_cr;
   wire signed [PROD_W-1:0] p1_ai_di;
   wire signed [PROD_W-1:0] p1_ar_di;
@@ -131,29 +122,19 @@ module stage3_butterfly #(
             .OUT_INT(PROD_INT), .OUT_FRAC(PROD_FRAC), .ROUNDING(ROUND))
     mul1_ai_cr (.operand_a(in5_imag), .operand_b(tw1_r), .result(p1_ai_cr), .overflow());
 
-  // Group 2 (a=in2, b=in6)
-  wire signed [PROD_W-1:0] p2_ar_cr;
-  wire signed [PROD_W-1:0] p2_ai_di;
-  wire signed [PROD_W-1:0] p2_ar_di;
-  wire signed [PROD_W-1:0] p2_ai_cr;
+  // --- GROUP 2 (twiddle = 0 - j1) handled WITHOUT multipliers ----
+  // For twiddle = -j (tw_r=0, tw_i=-1):
+  //   p2_ar_cr = 0
+  //   p2_ai_cr = 0
+  //   p2_ai_di = in6_imag * (-1)
+  //   p2_ar_di = in6_r    * (-1)
+  // Implement by sign-extend+shift into product Q scale and then negate.
+  wire signed [PROD_W-1:0] p2_ar_cr = {PROD_W{1'b0}};
+  wire signed [PROD_W-1:0] p2_ai_cr = {PROD_W{1'b0}};
+  wire signed [PROD_W-1:0] p2_ai_di = -($signed({{(PROD_W-IP_WIDTH){in6_imag[IP_WIDTH-1]}}, in6_imag}) <<< (PROD_FRAC - WI_FRAC));
+  wire signed [PROD_W-1:0] p2_ar_di = -($signed({{(PROD_W-IP_WIDTH){in6_r[IP_WIDTH-1]}}, in6_r}) <<< (PROD_FRAC - WI_FRAC));
 
-  fxp_multiplier #(.A_INT(WI_INT), .A_FRAC(WI_FRAC), .B_INT(TW_INT), .B_FRAC(TW_FRAC),
-            .OUT_INT(PROD_INT), .OUT_FRAC(PROD_FRAC), .ROUNDING(ROUND))
-    mul2_ar_cr (.operand_a(in6_r), .operand_b(tw2_r), .result(p2_ar_cr), .overflow());
-
-  fxp_multiplier #(.A_INT(WI_INT), .A_FRAC(WI_FRAC), .B_INT(TW_INT), .B_FRAC(TW_FRAC),
-            .OUT_INT(PROD_INT), .OUT_FRAC(PROD_FRAC), .ROUNDING(ROUND))
-    mul2_ai_di (.operand_a(in6_imag), .operand_b(tw2_i), .result(p2_ai_di), .overflow());
-
-  fxp_multiplier #(.A_INT(WI_INT), .A_FRAC(WI_FRAC), .B_INT(TW_INT), .B_FRAC(TW_FRAC),
-            .OUT_INT(PROD_INT), .OUT_FRAC(PROD_FRAC), .ROUNDING(ROUND))
-    mul2_ar_di (.operand_a(in6_r), .operand_b(tw2_i), .result(p2_ar_di), .overflow());
-
-  fxp_multiplier #(.A_INT(WI_INT), .A_FRAC(WI_FRAC), .B_INT(TW_INT), .B_FRAC(TW_FRAC),
-            .OUT_INT(PROD_INT), .OUT_FRAC(PROD_FRAC), .ROUNDING(ROUND))
-    mul2_ai_cr (.operand_a(in6_imag), .operand_b(tw2_r), .result(p2_ai_cr), .overflow());
-
-  // Group 3 (a=in3, b=in7)
+  // Group 3 (a=in3, b=in7) - general multipliers (unchanged)
   wire signed [PROD_W-1:0] p3_ar_cr;
   wire signed [PROD_W-1:0] p3_ai_di;
   wire signed [PROD_W-1:0] p3_ar_di;
