@@ -172,7 +172,7 @@ module tb_fft;
 
     #20;
 
-/* From Matlab
+/*  Matlab
     
 ================ Test Input 964 ================
 Input x(n):
