@@ -235,7 +235,7 @@ module tb_fft;
       $display("in6 =  %.4f + j  %.4f", fxp_to_real(in6_tb_r,0),  fxp_to_real(in6_tb_i,0));
       $display("in7 =  %.4f + j  %.4f", fxp_to_real(in7_tb_r,0),  fxp_to_real(in7_tb_i,0));
 
-      $display("=== Registerd Bit Reversed inputs (Q%0d.%0d format) ===", DUT.WO_INT, DUT.WO_FRAC);
+      $display("=== Registerd Bit Reversed inputs (Q%0d.%0d format) ===", DUT.WI_INT, DUT.WI_FRAC);
       $display("reg0 =  %.4f + j  %.4f", fxp_to_real(DUT.in0_reg_r,0),  fxp_to_real(DUT.in0_reg_i,0));
       $display("reg1 =  %.4f + j  %.4f", fxp_to_real(DUT.in1_reg_r,0),  fxp_to_real(DUT.in1_reg_i,0));
       $display("reg2 =  %.4f + j  %.4f", fxp_to_real(DUT.in2_reg_r,0),  fxp_to_real(DUT.in2_reg_i,0));
@@ -328,13 +328,13 @@ module tb_fft;
     begin
       $display("=== OUTPUTS (Q%0d.%0d format) ===", WO_INT, WO_FRAC);
       $display("out0 = %.4f + j %.4f", fxp_to_real(out0_tb_r,3), fxp_to_real(out0_tb_i,3));
-      $display("out1 = %.4f + j %.4f", fxp_to_real(out1_tb_r,3), fxp_to_real(out0_tb_i,3));
-      $display("out2 = %.4f + j %.4f", fxp_to_real(out2_tb_r,3), fxp_to_real(out0_tb_i,3));
-      $display("out3 = %.4f + j %.4f", fxp_to_real(out3_tb_r,3), fxp_to_real(out0_tb_i,3));
-      $display("out4 = %.4f + j %.4f", fxp_to_real(out4_tb_r,3), fxp_to_real(out0_tb_i,3));
-      $display("out5 = %.4f + j %.4f", fxp_to_real(out5_tb_r,3), fxp_to_real(out0_tb_i,3));
-      $display("out6 = %.4f + j %.4f", fxp_to_real(out6_tb_r,3), fxp_to_real(out0_tb_i,3));
-      $display("out7 = %.4f + j %.4f", fxp_to_real(out7_tb_r,3), fxp_to_real(out0_tb_i,3));
+      $display("out1 = %.4f + j %.4f", fxp_to_real(out1_tb_r,3), fxp_to_real(out1_tb_i,3));
+      $display("out2 = %.4f + j %.4f", fxp_to_real(out2_tb_r,3), fxp_to_real(out2_tb_i,3));
+      $display("out3 = %.4f + j %.4f", fxp_to_real(out3_tb_r,3), fxp_to_real(out3_tb_i,3));
+      $display("out4 = %.4f + j %.4f", fxp_to_real(out4_tb_r,3), fxp_to_real(out4_tb_i,3));
+      $display("out5 = %.4f + j %.4f", fxp_to_real(out5_tb_r,3), fxp_to_real(out5_tb_i,3));
+      $display("out6 = %.4f + j %.4f", fxp_to_real(out6_tb_r,3), fxp_to_real(out6_tb_i,3));
+      $display("out7 = %.4f + j %.4f", fxp_to_real(out7_tb_r,3), fxp_to_real(out7_tb_i,3));
     end
   endtask
   task display;
