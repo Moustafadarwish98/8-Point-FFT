@@ -105,7 +105,6 @@ module tb_fft;
   always #(CLK_PERIOD / 2.0) clk_tb = ~clk_tb;
 
   integer clk_cycle = 0;
-
   initial
   begin
     // Initialize
