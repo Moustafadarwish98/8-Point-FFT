@@ -3,13 +3,12 @@
 // Converts between two fixed-point formats (different integer
 // and fractional bit widths). Supports rounding and overflow.
 // =============================================================
-
 module fxp_zoom #(
-    // Input fixed-point format: (INT.IN + FRAC.IN)
+    // Input fixed-point format: 
     parameter INPUT_INT   = 8,   // Integer bits of input
     parameter INPUT_FRAC  = 8,   // Fractional bits of input
 
-    // Output fixed-point format: (INT.OUT + FRAC.OUT)
+    // Output fixed-point format: 
     parameter OUTPUT_INT  = 8,   // Integer bits of output
     parameter OUTPUT_FRAC = 8,   // Fractional bits of output
 
@@ -17,8 +16,7 @@ module fxp_zoom #(
     // 0 = truncate, 1 = round-to-nearest
     parameter ROUNDING    = 0
 )(
-    // Input fixed-point number (signed or unsigned depending
-    // on how you interpret it externally)
+    // Input fixed-point number 
     input  wire [INPUT_INT+INPUT_FRAC-1:0] in_val,
 
     // Output fixed-point number
@@ -27,7 +25,6 @@ module fxp_zoom #(
     // Overflow flag (saturation occurred)
     output reg  overflow
 );
-
   // ------------------------------------------------------------
   // Internal registers
   // ------------------------------------------------------------
@@ -53,7 +50,6 @@ module fxp_zoom #(
   // If OUTPUT_FRAC > INPUT_FRAC → must pad zeros (increase precision)
   // If OUTPUT_FRAC == INPUT_FRAC → pass-through
   // ------------------------------------------------------------
-
   generate
     if (OUTPUT_FRAC < INPUT_FRAC) begin : reduce_fractional
       // Case: reducing fractional resolution

@@ -1,6 +1,8 @@
-module bit_reversal #(parameter WI_INT   = 6,
-                  WI_FRAC  = 6,
-                  IP_WIDTH = WI_FRAC + WI_INT) (
+module bit_reversal #(
+    parameter WI_INT   = 6,
+    WI_FRAC  = 6,
+    IP_WIDTH = WI_FRAC + WI_INT)
+  (
     input wire signed [IP_WIDTH - 1:0] in0_r,
     input wire signed [IP_WIDTH - 1:0] in1_r,
     input wire signed [IP_WIDTH - 1:0] in2_r,

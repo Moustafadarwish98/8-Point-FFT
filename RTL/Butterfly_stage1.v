@@ -1,13 +1,15 @@
 module stage1_butterfly #(
-  parameter WIDTH = 12,
-  parameter WI_INT = 6,
-  parameter WI_FRAC = WIDTH - WI_INT,
-  parameter WO_INT = 7,
-  parameter WO_FRAC = WIDTH - WO_INT,
-  parameter OP_WIDTH = WO_FRAC + WO_INT,
-  parameter IP_WIDTH = WI_FRAC + WI_INT,
-  parameter ROUND = 0
-)(
+    parameter WIDTH = 12,
+    parameter WI_INT = 6,
+    parameter WI_FRAC = WIDTH - WI_INT,
+    parameter WO_INT = 7,
+    parameter WO_FRAC = WIDTH - WO_INT,
+    parameter OP_WIDTH = WO_FRAC + WO_INT,
+    parameter IP_WIDTH = WI_FRAC + WI_INT,
+    parameter ROUND = 0
+  )(
+    input  wire clk,
+    input  wire rst_n,
     input  wire signed [IP_WIDTH-1:0] in0_r,
     input  wire signed [IP_WIDTH-1:0] in1_r,
     input  wire signed [IP_WIDTH-1:0] in2_r,
@@ -24,8 +26,6 @@ module stage1_butterfly #(
     input  wire signed [IP_WIDTH-1:0] in5_imag,
     input  wire signed [IP_WIDTH-1:0] in6_imag,
     input  wire signed [IP_WIDTH-1:0] in7_imag,
-    input  wire clk,
-    input  wire rst_n,
 
     output reg signed [OP_WIDTH-1:0] stage1_out0_r,
     output reg signed [OP_WIDTH-1:0] stage1_out1_r,
@@ -46,11 +46,11 @@ module stage1_butterfly #(
   );
 
   // Internal wires for fxp results
-  wire [OP_WIDTH-1:0] temp_r [0:7]; //should these be  [OP_WIDTH:0] temp_r [0:7] to be able to hold whole result?
+  wire [OP_WIDTH-1:0] temp_r [0:7]; 
   wire [OP_WIDTH-1:0] temp_i [0:7];
   wire overflow [0:7];
   wire overflow_i [0:7];
-
+  
   // Butterfly calculations using fixed-point module
   fxp_addsub #(WI_INT, WI_FRAC, WI_INT, WI_FRAC, WO_INT, WO_FRAC, ROUND ) add0_r (
                .operand_a(in0_r), .operand_b(in1_r), .subtract(1'b0), .result(temp_r[0]), .overflow(overflow[0])

@@ -7,7 +7,7 @@
 // Uses explicit, unrolled fxp_multiplier and fxp_zoom instances (no generate)
 // ============================================================================
 
-module stage3_butterfly #(
+module stage3_butterfly_full_mul #(
   parameter WIDTH   = 12,
   parameter WI_INT  = 7,                       // data integer bits (Q7.5)
   parameter WI_FRAC = WIDTH - WI_INT,          // 5

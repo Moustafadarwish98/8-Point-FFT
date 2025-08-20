@@ -10,6 +10,8 @@ module stage2_butterfly #(
     parameter TW_FRAC = 10,
     parameter TW_IN = 2
   )(
+    input wire clk,
+    input wire rst_n,
     input wire signed [IP_WIDTH-1:0] in0_r,
     input wire signed [IP_WIDTH-1:0] in1_r,
     input wire signed [IP_WIDTH-1:0] in2_r,
@@ -26,8 +28,6 @@ module stage2_butterfly #(
     input wire signed [IP_WIDTH-1:0] in5_imag,
     input wire signed [IP_WIDTH-1:0] in6_imag,
     input wire signed [IP_WIDTH-1:0] in7_imag,
-    input wire clk,
-    input wire rst_n,
 
     output reg signed [OP_WIDTH-1:0] stage2_out0_r,
     output reg signed [OP_WIDTH-1:0] stage2_out1_r,
@@ -49,8 +49,8 @@ module stage2_butterfly #(
 
   // --------------------------------------------------------
   // Twiddle multiply for groups
-  // - For (1,3) and (5,7), multiply second input by -j
-  //   (a + jb) * (-j) =  b - ja
+  // For (1,3) and (5,7), multiply second input by -j
+  // directly (a + jb) * (-j) =  b - ja --> instead of using a complex multiplier
   // --------------------------------------------------------
 
   // Twiddle applied versions of inputs
@@ -59,7 +59,7 @@ module stage2_butterfly #(
   wire signed [IP_WIDTH-1:0] w6_r, w6_i;
   wire signed [IP_WIDTH-1:0] w7_r, w7_i;
 
-  // (1) multiply in2, in3, in6, in7 by twiddles
+  // multiply in2, in3, in6, in7 by twiddles
   assign w2_r = in2_r;        // twiddle = 1
   assign w2_i = in2_imag;
 
@@ -73,7 +73,7 @@ module stage2_butterfly #(
   assign w7_i = -in7_r;
 
   // --------------------------------------------------------
-  // Butterfly ops: (a+b), (a-b)
+  // Butterfly outputs: (a+b), (a-b)
   // --------------------------------------------------------
   wire [OP_WIDTH-1:0] temp_r [0:7];
   wire [OP_WIDTH-1:0] temp_i [0:7];
@@ -124,9 +124,6 @@ module stage2_butterfly #(
   fxp_addsub #(WI_INT, WI_FRAC, WI_INT, WI_FRAC, WO_INT, WO_FRAC, ROUND)
              sub3_i (.operand_a(in5_imag), .operand_b(w7_i), .subtract(1'b1), .result(temp_i[7]), .overflow(overflow_i[7]));
 
-  // --------------------------------------------------------
-  // Register outputs
-  // --------------------------------------------------------
   always @(posedge clk or negedge rst_n)
   begin
     if (!rst_n)

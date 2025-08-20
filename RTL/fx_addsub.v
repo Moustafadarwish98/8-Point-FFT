@@ -13,29 +13,28 @@
 // - fxp_zoom is used to align inputs to a common format and to resize
 //   the final result with saturation/overflow handling.
 // ============================================================================
-
 module fxp_addsub #(
-  // Operand A format
-  parameter A_INT   = 7,   // integer bits for operand A (incl. sign)
-  parameter A_FRAC  = 5,   // fractional bits for operand A
+    // Operand A format
+    parameter A_INT   = 7,   // integer bits for operand A
+    parameter A_FRAC  = 5,   // fractional bits for operand A
 
-  // Operand B format
-  parameter B_INT   = 7,   // integer bits for operand B (incl. sign)
-  parameter B_FRAC  = 5,   // fractional bits for operand B
+    // Operand B format
+    parameter B_INT   = 7,   // integer bits for operand B
+    parameter B_FRAC  = 5,   // fractional bits for operand B
 
-  // Output format
-  parameter OUT_INT = 7,   // output integer bits (incl. sign)
-  parameter OUT_FRAC= 5,   // output fractional bits
+    // Output format
+    parameter OUT_INT = 7,   // output integer bits
+    parameter OUT_FRAC= 5,   // output fractional bits
 
-  // Rounding control
-  parameter ROUNDING= 0    // enable rounding in_val final zoom
-)(
-  input  wire [A_INT+A_FRAC-1:0] operand_a, // fixed-point input A
-  input  wire [B_INT+B_FRAC-1:0] operand_b, // fixed-point input B
-  input  wire                    subtract,  // 0 = add, 1 = subtract
-  output wire [OUT_INT+OUT_FRAC-1:0] result, // fixed-point output
-  output wire                    overflow   // overflow indicator
-);
+    // Rounding control
+    parameter ROUNDING= 0    // enable rounding in_val final zoom
+  )(
+    input  wire [A_INT+A_FRAC-1:0] operand_a, // fixed-point input A
+    input  wire [B_INT+B_FRAC-1:0] operand_b, // fixed-point input B
+    input  wire                    subtract,  // 0 = add, 1 = subtract
+    output wire [OUT_INT+OUT_FRAC-1:0] result, // fixed-point output
+    output wire                    overflow   // overflow indicator
+  );
 
   // ==========================================================================
   // Step 1: Determine common internal widths
@@ -59,62 +58,62 @@ module fxp_addsub #(
   // Step 3: Subtraction handled as two's complement negation
   // ==========================================================================
   assign operand_b_negated = subtract ? (~operand_b_ext) + CONST_ONE
-                                      : operand_b_ext;
+         : operand_b_ext;
 
   // ==========================================================================
   // Step 4: Perform signed addition
   // ==========================================================================
   wire signed [RES_INT+RES_FRAC-1:0] res_sum =
-      $signed(operand_a_aligned) + $signed(operand_b_aligned);
+       $signed(operand_a_aligned) + $signed(operand_b_aligned);
 
   // ==========================================================================
   // Step 5: Input zooming/extension
   // ==========================================================================
-  
+
   // Extend operand B by one integer bit (sign extend)
   fxp_zoom #(
-    .INPUT_INT  (B_INT),  .INPUT_FRAC    (B_FRAC),
-    .OUTPUT_INT   (B_INT_EXT), .OUTPUT_FRAC (B_FRAC),
-    .ROUNDING (0)
-  ) b_extend (
-    .in_val (operand_b),
-    .out_val(operand_b_ext),
-    .overflow()
-  );
+             .INPUT_INT  (B_INT),  .INPUT_FRAC    (B_FRAC),
+             .OUTPUT_INT   (B_INT_EXT), .OUTPUT_FRAC (B_FRAC),
+             .ROUNDING (0)
+           ) b_extend (
+             .in_val (operand_b),
+             .out_val(operand_b_ext),
+             .overflow()
+           );
 
   // Zoom operand A to common width (COMMON_INT:COMMON_FRAC)
   fxp_zoom #(
-    .INPUT_INT    (A_INT),  .INPUT_FRAC  (A_FRAC),
-    .OUTPUT_INT    (COMMON_INT), .OUTPUT_FRAC (COMMON_FRAC),
-    .ROUNDING (0)
-  ) a_zoom (
-    .in_val (operand_a),
-    .out_val(operand_a_aligned),
-    .overflow()
-  );
+             .INPUT_INT    (A_INT),  .INPUT_FRAC  (A_FRAC),
+             .OUTPUT_INT    (COMMON_INT), .OUTPUT_FRAC (COMMON_FRAC),
+             .ROUNDING (0)
+           ) a_zoom (
+             .in_val (operand_a),
+             .out_val(operand_a_aligned),
+             .overflow()
+           );
 
   // Zoom operand B (possibly negated) to common width
   fxp_zoom #(
-    .INPUT_INT    (B_INT_EXT), .INPUT_FRAC  (B_FRAC),
-    .OUTPUT_INT    (COMMON_INT), .OUTPUT_FRAC (COMMON_FRAC),
-    .ROUNDING (0)
-  ) b_zoom (
-    .in_val (operand_b_negated),
-    .out_val(operand_b_aligned),
-    .overflow()
-  );
+             .INPUT_INT    (B_INT_EXT), .INPUT_FRAC  (B_FRAC),
+             .OUTPUT_INT    (COMMON_INT), .OUTPUT_FRAC (COMMON_FRAC),
+             .ROUNDING (0)
+           ) b_zoom (
+             .in_val (operand_b_negated),
+             .out_val(operand_b_aligned),
+             .overflow()
+           );
 
   // ==========================================================================
   // Step 6: Final zoom of result to desired output width
   // ==========================================================================
   fxp_zoom #(
-    .INPUT_INT    (RES_INT), .INPUT_FRAC  (RES_FRAC),
-    .OUTPUT_INT    (OUT_INT), .OUTPUT_FRAC (OUT_FRAC),
-    .ROUNDING (ROUNDING)
-  ) result_zoom (
-    .in_val ($unsigned(res_sum)),   // cast signed to unsigned bit-vector
-    .out_val(result),
-    .overflow(overflow)
-  );
+             .INPUT_INT    (RES_INT), .INPUT_FRAC  (RES_FRAC),
+             .OUTPUT_INT    (OUT_INT), .OUTPUT_FRAC (OUT_FRAC),
+             .ROUNDING (ROUNDING)
+           ) result_zoom (
+             .in_val (res_sum),
+             .out_val(result),
+             .overflow(overflow)
+           );
 
 endmodule
