@@ -55,8 +55,8 @@ module tb_fft;
   localparam integer VEC_LEN   = 8;
   localparam integer MAX_LINES = 816;
 
-  localparam NUM_VECS = 109;
-  localparam PIPELINE_LATENCY = 7; // for pipelined 8-point FFT, 3 stages + reg after each stage + reversed inputs register = 7 cycles
+  localparam NUM_VECS = 108;
+  localparam PIPELINE_LATENCY = 6; // for pipelined 8-point FFT, 3 stages + reg after each stage + reversed inputs register = 6 cycles
 
   // Flat memories that hold ALL lines from the .mem files
   reg signed [IP_WIDTH-1:0] input_mem_r  [0:MAX_LINES-1];

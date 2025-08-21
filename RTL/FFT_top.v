@@ -496,34 +496,25 @@ module fft_top#(
                    .out7_r(stage3_reg7_r), .out7_i(stage3_reg7_i)
                  );
   // Pipeline register for Stage 3 outputs (final FFT results)
-  pipeline_stage #(
-                   .WIDTH(WIDTH),
-                   .WI_INT(STAGE_3_OUT_INT),
-                   .WI_FRAC(STAGE_3_OUT_FRAC),
-                   .WO_INT(WO_INT),
+  output_wire #(   .WO_INT(WO_INT),
                    .WO_FRAC(WO_FRAC),
-                   .OP_WIDTH(OP_WIDTH),
-                   .TW_FRAC(TW_FRAC),
-                   .TW_IN(TW_IN),
-                   .IP_WIDTH(OP_WIDTH)
-                 ) output_pipeline (
-                   .clk(clk),
-                   .rst(rst_n),
-                   .in0_r(stage3_reg0_r), .in0_i(stage3_reg0_i),
-                   .in1_r(stage3_reg1_r), .in1_i(stage3_reg1_i),
-                   .in2_r(stage3_reg2_r), .in2_i(stage3_reg2_i),
-                   .in3_r(stage3_reg3_r), .in3_i(stage3_reg3_i),
-                   .in4_r(stage3_reg4_r), .in4_i(stage3_reg4_i),
-                   .in5_r(stage3_reg5_r), .in5_i(stage3_reg5_i),
-                   .in6_r(stage3_reg6_r), .in6_i(stage3_reg6_i),
-                   .in7_r(stage3_reg7_r), .in7_i(stage3_reg7_i),
-                   .out0_r(out0_r), .out0_i(out0_imag),
-                   .out1_r(out1_r), .out1_i(out1_imag),
-                   .out2_r(out2_r), .out2_i(out2_imag),
-                   .out3_r(out3_r), .out3_i(out3_imag),
-                   .out4_r(out4_r), .out4_i(out4_imag),
-                   .out5_r(out5_r), .out5_i(out5_imag),
-                   .out6_r(out6_r), .out6_i(out6_imag),
-                   .out7_r(out7_r), .out7_i(out7_imag)
-                 );
+                   .OP_WIDTH(OP_WIDTH)
+               ) output_wiring (
+                .in0_r(stage3_reg0_r), .in0_i(stage3_reg0_i),
+                .in1_r(stage3_reg1_r), .in1_i(stage3_reg1_i),
+                .in2_r(stage3_reg2_r), .in2_i(stage3_reg2_i),
+                .in3_r(stage3_reg3_r), .in3_i(stage3_reg3_i),
+                .in4_r(stage3_reg4_r), .in4_i(stage3_reg4_i),
+                .in5_r(stage3_reg5_r), .in5_i(stage3_reg5_i),
+                .in6_r(stage3_reg6_r), .in6_i(stage3_reg6_i),
+                .in7_r(stage3_reg7_r), .in7_i(stage3_reg7_i),
+                .out0_r(out0_r), .out0_i(out0_imag),
+                .out1_r(out1_r), .out1_i(out1_imag),
+                .out2_r(out2_r), .out2_i(out2_imag),
+                .out3_r(out3_r), .out3_i(out3_imag),
+                .out4_r(out4_r), .out4_i(out4_imag),
+                .out5_r(out5_r), .out5_i(out5_imag),
+                .out6_r(out6_r), .out6_i(out6_imag),
+                .out7_r(out7_r), .out7_i(out7_imag)
+              );
 endmodule
