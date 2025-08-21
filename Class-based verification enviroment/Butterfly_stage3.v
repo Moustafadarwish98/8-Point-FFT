@@ -259,7 +259,7 @@ module stage3_butterfly #(
   fxp_zoom #(.INPUT_INT(SUM_INT), .INPUT_FRAC(SUM_FRAC), .OUTPUT_INT(WO_INT), .OUTPUT_FRAC(WO_FRAC), .ROUNDING(ROUND))
            zoom3_B_i (.in_val((B3_i_wide)), .out_val(temp_i[7]), .overflow());
 
-  always @(posedge clk or negedge rst_n)
+  always @(posedge clk )
   begin
     if (!rst_n)
     begin

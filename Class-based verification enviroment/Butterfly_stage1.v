@@ -103,7 +103,7 @@ module stage1_butterfly #(
                .operand_a(in6_imag), .operand_b(in7_imag), .subtract(1'b1), .result(temp_i[7]), .overflow(overflow_i[7])
              );
 
-  always @(posedge clk or negedge rst_n)
+  always @(posedge clk )
   begin
     if (!rst_n)
     begin
