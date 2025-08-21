@@ -39,19 +39,19 @@ module output_wire #(
   );
 
   assign out0_r = in0_r;
-  assign out1_r = in4_r;
+  assign out1_r = in1_r;
   assign out2_r = in2_r;
-  assign out3_r = in6_r;
-  assign out4_r = in1_r;
+  assign out3_r = in3_r;
+  assign out4_r = in4_r;
   assign out5_r = in5_r;
-  assign out6_r = in3_r;
+  assign out6_r = in6_r;
   assign out7_r = in7_r;
   assign out0_i = in0_i;
-  assign out1_i = in4_i;
+  assign out1_i = in1_i;
   assign out2_i = in2_i;
-  assign out3_i = in6_i;
-  assign out4_i = in1_i;
+  assign out3_i = in3_i;
+  assign out4_i = in4_i;
   assign out5_i = in5_i;
-  assign out6_i = in3_i;
+  assign out6_i = in6_i;
   assign out7_i = in7_i;
 endmodule
