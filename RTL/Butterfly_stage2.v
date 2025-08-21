@@ -124,7 +124,7 @@ module stage2_butterfly #(
   fxp_addsub #(WI_INT, WI_FRAC, WI_INT, WI_FRAC, WO_INT, WO_FRAC, ROUND)
              sub3_i (.operand_a(in5_imag), .operand_b(w7_i), .subtract(1'b1), .result(temp_i[7]), .overflow(overflow_i[7]));
 
-  always @(posedge clk or negedge rst_n)
+  always @(posedge clk )
   begin
     if (!rst_n)
     begin

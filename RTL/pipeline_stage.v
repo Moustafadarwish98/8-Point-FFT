@@ -47,7 +47,7 @@ module pipeline_stage #(
     output reg  [OP_WIDTH-1:0] out7_r,
     output reg  [OP_WIDTH-1:0] out7_i
   );
-  always @ (posedge clk or negedge rst)
+  always @ (posedge clk )
   begin
     if(!rst)
     begin
