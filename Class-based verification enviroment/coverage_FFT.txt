@@ -1,0 +1,2263 @@
+Coverage Report by file with details
+
+=================================================================================
+=== File: Butterfly_stage1.v
+=================================================================================
+Statement Coverage:
+    Enabled Coverage            Active      Hits    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    Stmts                           33        33         0    100.00
+
+================================Statement Details================================
+
+Statement Coverage for file Butterfly_stage1.v --
+
+    1                                                module stage1_butterfly #(
+    2                                                    parameter WIDTH = 12,
+    3                                                    parameter WI_INT = 6,
+    4                                                    parameter WI_FRAC = WIDTH - WI_INT,
+    5                                                    parameter WO_INT = 7,
+    6                                                    parameter WO_FRAC = WIDTH - WO_INT,
+    7                                                    parameter OP_WIDTH = WO_FRAC + WO_INT,
+    8                                                    parameter IP_WIDTH = WI_FRAC + WI_INT,
+    9                                                    parameter ROUND = 0
+    10                                                 )(
+    11                                                   input  wire clk,
+    12                                                   input  wire rst_n,
+    13                                                   input  wire signed [IP_WIDTH-1:0] in0_r,
+    14                                                   input  wire signed [IP_WIDTH-1:0] in1_r,
+    15                                                   input  wire signed [IP_WIDTH-1:0] in2_r,
+    16                                                   input  wire signed [IP_WIDTH-1:0] in3_r,
+    17                                                   input  wire signed [IP_WIDTH-1:0] in4_r,
+    18                                                   input  wire signed [IP_WIDTH-1:0] in5_r,
+    19                                                   input  wire signed [IP_WIDTH-1:0] in6_r,
+    20                                                   input  wire signed [IP_WIDTH-1:0] in7_r,
+    21                                                   input  wire signed [IP_WIDTH-1:0] in0_imag,
+    22                                                   input  wire signed [IP_WIDTH-1:0] in1_imag,
+    23                                                   input  wire signed [IP_WIDTH-1:0] in2_imag,
+    24                                                   input  wire signed [IP_WIDTH-1:0] in3_imag,
+    25                                                   input  wire signed [IP_WIDTH-1:0] in4_imag,
+    26                                                   input  wire signed [IP_WIDTH-1:0] in5_imag,
+    27                                                   input  wire signed [IP_WIDTH-1:0] in6_imag,
+    28                                                   input  wire signed [IP_WIDTH-1:0] in7_imag,
+    29                                               
+    30                                                   output reg signed [OP_WIDTH-1:0] stage1_out0_r,
+    31                                                   output reg signed [OP_WIDTH-1:0] stage1_out1_r,
+    32                                                   output reg signed [OP_WIDTH-1:0] stage1_out2_r,
+    33                                                   output reg signed [OP_WIDTH-1:0] stage1_out3_r,
+    34                                                   output reg signed [OP_WIDTH-1:0] stage1_out4_r,
+    35                                                   output reg signed [OP_WIDTH-1:0] stage1_out5_r,
+    36                                                   output reg signed [OP_WIDTH-1:0] stage1_out6_r,
+    37                                                   output reg signed [OP_WIDTH-1:0] stage1_out7_r,
+    38                                                   output reg signed [OP_WIDTH-1:0] stage1_out0_imag,
+    39                                                   output reg signed [OP_WIDTH-1:0] stage1_out1_imag,
+    40                                                   output reg signed [OP_WIDTH-1:0] stage1_out2_imag,
+    41                                                   output reg signed [OP_WIDTH-1:0] stage1_out3_imag,
+    42                                                   output reg signed [OP_WIDTH-1:0] stage1_out4_imag,
+    43                                                   output reg signed [OP_WIDTH-1:0] stage1_out5_imag,
+    44                                                   output reg signed [OP_WIDTH-1:0] stage1_out6_imag,
+    45                                                   output reg signed [OP_WIDTH-1:0] stage1_out7_imag
+    46                                                 );
+    47                                               
+    48                                                 // Internal wires for fxp results
+    49                                                 wire [OP_WIDTH-1:0] temp_r [0:7]; 
+    50                                                 wire [OP_WIDTH-1:0] temp_i [0:7];
+    51                                                 wire overflow [0:7];
+    52                                                 wire overflow_i [0:7];
+    53                                                 
+    54                                                 // Butterfly calculations using fixed-point module
+    55                                                 fxp_addsub #(WI_INT, WI_FRAC, WI_INT, WI_FRAC, WO_INT, WO_FRAC, ROUND ) add0_r (
+    56                                                              .operand_a(in0_r), .operand_b(in1_r), .subtract(1'b0), .result(temp_r[0]), .overflow(overflow[0])
+    57                                                            );
+    58                                                 fxp_addsub #(WI_INT, WI_FRAC, WI_INT, WI_FRAC, WO_INT, WO_FRAC, ROUND ) sub0_r (
+    59                                                              .operand_a(in0_r), .operand_b(in1_r), .subtract(1'b1), .result(temp_r[1]), .overflow(overflow[1])
+    60                                                            );
+    61                                                 fxp_addsub #(WI_INT, WI_FRAC, WI_INT, WI_FRAC, WO_INT, WO_FRAC, ROUND ) add1_r (
+    62                                                              .operand_a(in2_r), .operand_b(in3_r), .subtract(1'b0), .result(temp_r[2]), .overflow(overflow[2])
+    63                                                            );
+    64                                                 fxp_addsub #(WI_INT, WI_FRAC, WI_INT, WI_FRAC, WO_INT, WO_FRAC, ROUND ) sub1_r (
+    65                                                              .operand_a(in2_r), .operand_b(in3_r), .subtract(1'b1), .result(temp_r[3]), .overflow(overflow[3])
+    66                                                            );
+    67                                                 fxp_addsub #(WI_INT, WI_FRAC, WI_INT, WI_FRAC, WO_INT, WO_FRAC, ROUND ) add2_r (
+    68                                                              .operand_a(in4_r), .operand_b(in5_r), .subtract(1'b0), .result(temp_r[4]), .overflow(overflow[4])
+    69                                                            );
+    70                                                 fxp_addsub #(WI_INT, WI_FRAC, WI_INT, WI_FRAC, WO_INT, WO_FRAC, ROUND ) sub2_r (
+    71                                                              .operand_a(in4_r), .operand_b(in5_r), .subtract(1'b1), .result(temp_r[5]), .overflow(overflow[5])
+    72                                                            );
+    73                                                 fxp_addsub #(WI_INT, WI_FRAC, WI_INT, WI_FRAC, WO_INT, WO_FRAC, ROUND ) add3_r (
+    74                                                              .operand_a(in6_r), .operand_b(in7_r), .subtract(1'b0), .result(temp_r[6]), .overflow(overflow[6])
+    75                                                            );
+    76                                                 fxp_addsub #(WI_INT, WI_FRAC, WI_INT, WI_FRAC, WO_INT, WO_FRAC, ROUND ) sub3_r (
+    77                                                              .operand_a(in6_r), .operand_b(in7_r), .subtract(1'b1), .result(temp_r[7]), .overflow(overflow[7])
+    78                                                            );
+    79                                               
+    80                                                 // Imaginary parts
+    81                                                 fxp_addsub #(WI_INT, WI_FRAC, WI_INT, WI_FRAC, WO_INT, WO_FRAC, ROUND ) add0_i (
+    82                                                              .operand_a(in0_imag), .operand_b(in1_imag), .subtract(1'b0), .result(temp_i[0]), .overflow(overflow_i[0])
+    83                                                            );
+    84                                                 fxp_addsub #(WI_INT, WI_FRAC, WI_INT, WI_FRAC, WO_INT, WO_FRAC, ROUND ) sub0_i (
+    85                                                              .operand_a(in0_imag), .operand_b(in1_imag), .subtract(1'b1), .result(temp_i[1]), .overflow(overflow_i[1])
+    86                                                            );
+    87                                                 fxp_addsub #(WI_INT, WI_FRAC, WI_INT, WI_FRAC, WO_INT, WO_FRAC, ROUND ) add1_i (
+    88                                                              .operand_a(in2_imag), .operand_b(in3_imag), .subtract(1'b0), .result(temp_i[2]), .overflow(overflow_i[2])
+    89                                                            );
+    90                                                 fxp_addsub #(WI_INT, WI_FRAC, WI_INT, WI_FRAC, WO_INT, WO_FRAC, ROUND ) sub1_i (
+    91                                                              .operand_a(in2_imag), .operand_b(in3_imag), .subtract(1'b1), .result(temp_i[3]), .overflow(overflow_i[3])
+    92                                                            );
+    93                                                 fxp_addsub #(WI_INT, WI_FRAC, WI_INT, WI_FRAC, WO_INT, WO_FRAC, ROUND ) add2_i (
+    94                                                              .operand_a(in4_imag), .operand_b(in5_imag), .subtract(1'b0), .result(temp_i[4]), .overflow(overflow_i[4])
+    95                                                            );
+    96                                                 fxp_addsub #(WI_INT, WI_FRAC, WI_INT, WI_FRAC, WO_INT, WO_FRAC, ROUND ) sub2_i (
+    97                                                              .operand_a(in4_imag), .operand_b(in5_imag), .subtract(1'b1), .result(temp_i[5]), .overflow(overflow_i[5])
+    98                                                            );
+    99                                                 fxp_addsub #(WI_INT, WI_FRAC, WI_INT, WI_FRAC, WO_INT, WO_FRAC, ROUND ) add3_i (
+    100                                                             .operand_a(in6_imag), .operand_b(in7_imag), .subtract(1'b0), .result(temp_i[6]), .overflow(overflow_i[6])
+    101                                                           );
+    102                                                fxp_addsub #(WI_INT, WI_FRAC, WI_INT, WI_FRAC, WO_INT, WO_FRAC, ROUND ) sub3_i (
+    103                                                             .operand_a(in6_imag), .operand_b(in7_imag), .subtract(1'b1), .result(temp_i[7]), .overflow(overflow_i[7])
+    104                                                           );
+    105                                              
+    106             1                        106       always @(posedge clk or negedge rst_n)
+    107                                                begin
+    108                                                  if (!rst_n)
+    109                                                  begin
+    110             1                          2           stage1_out0_r <= 0;
+    111             1                          2           stage1_out1_r <= 0;
+    112             1                          2           stage1_out2_r <= 0;
+    113             1                          2           stage1_out3_r <= 0;
+    114             1                          2           stage1_out4_r <= 0;
+    115             1                          2           stage1_out5_r <= 0;
+    116             1                          2           stage1_out6_r <= 0;
+    117             1                          2           stage1_out7_r <= 0;
+    118             1                          2           stage1_out0_imag <= 0;
+    119             1                          2           stage1_out1_imag <= 0;
+    120             1                          2           stage1_out2_imag <= 0;
+    121             1                          2           stage1_out3_imag <= 0;
+    122             1                          2           stage1_out4_imag <= 0;
+    123             1                          2           stage1_out5_imag <= 0;
+    124             1                          2           stage1_out6_imag <= 0;
+    125             1                          2           stage1_out7_imag <= 0;
+    126                                                  end
+    127                                                  else
+    128                                                  begin
+    129                                                    // Assign to outputs
+    130             1                        104           stage1_out0_r <= temp_r[0];
+    131             1                        104           stage1_out1_r <= temp_r[1];
+    132             1                        104           stage1_out2_r <= temp_r[2];
+    133             1                        104           stage1_out3_r <= temp_r[3];
+    134             1                        104           stage1_out4_r <= temp_r[4];
+    135             1                        104           stage1_out5_r <= temp_r[5];
+    136             1                        104           stage1_out6_r <= temp_r[6];
+    137             1                        104           stage1_out7_r <= temp_r[7];
+    138                                              
+    139             1                        104           stage1_out0_imag <= temp_i[0];
+    140             1                        104           stage1_out1_imag <= temp_i[1];
+    141             1                        104           stage1_out2_imag <= temp_i[2];
+    142             1                        104           stage1_out3_imag <= temp_i[3];
+    143             1                        104           stage1_out4_imag <= temp_i[4];
+    144             1                        104           stage1_out5_imag <= temp_i[5];
+    145             1                        104           stage1_out6_imag <= temp_i[6];
+    146             1                        104           stage1_out7_imag <= temp_i[7];
+    147                                                  end
+    148                                                end
+    149                                              
+    150                                              endmodule
+
+Branch Coverage:
+    Enabled Coverage            Active      Hits    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    Branches                         2         2         0    100.00
+
+================================Branch Details================================
+
+Branch Coverage for file Butterfly_stage1.v --
+
+------------------------------------IF Branch------------------------------------
+    108                                      106     Count coming in to IF
+    108             1                          2         if (!rst_n)
+    127             1                        104         else
+Branch totals: 2 hits of 2 branches = 100.00%
+
+
+
+=================================================================================
+=== File: Butterfly_stage2.v
+=================================================================================
+Statement Coverage:
+    Enabled Coverage            Active      Hits    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    Stmts                           35        35         0    100.00
+
+================================Statement Details================================
+
+Statement Coverage for file Butterfly_stage2.v --
+
+    1                                                module stage2_butterfly #(
+    2                                                    parameter WIDTH = 12,
+    3                                                    parameter WI_INT = 7,
+    4                                                    parameter WI_FRAC = WIDTH - WI_INT,
+    5                                                    parameter WO_INT = 7,
+    6                                                    parameter WO_FRAC = WIDTH - WO_INT,
+    7                                                    parameter OP_WIDTH = WO_FRAC + WO_INT,
+    8                                                    parameter IP_WIDTH = WI_FRAC + WI_INT,
+    9                                                    parameter ROUND = 0,
+    10                                                   parameter TW_FRAC = 10,
+    11                                                   parameter TW_IN = 2
+    12                                                 )(
+    13                                                   input wire clk,
+    14                                                   input wire rst_n,
+    15                                                   input wire signed [IP_WIDTH-1:0] in0_r,
+    16                                                   input wire signed [IP_WIDTH-1:0] in1_r,
+    17                                                   input wire signed [IP_WIDTH-1:0] in2_r,
+    18                                                   input wire signed [IP_WIDTH-1:0] in3_r,
+    19                                                   input wire signed [IP_WIDTH-1:0] in4_r,
+    20                                                   input wire signed [IP_WIDTH-1:0] in5_r,
+    21                                                   input wire signed [IP_WIDTH-1:0] in6_r,
+    22                                                   input wire signed [IP_WIDTH-1:0] in7_r,
+    23                                                   input wire signed [IP_WIDTH-1:0] in0_imag,
+    24                                                   input wire signed [IP_WIDTH-1:0] in1_imag,
+    25                                                   input wire signed [IP_WIDTH-1:0] in2_imag,
+    26                                                   input wire signed [IP_WIDTH-1:0] in3_imag,
+    27                                                   input wire signed [IP_WIDTH-1:0] in4_imag,
+    28                                                   input wire signed [IP_WIDTH-1:0] in5_imag,
+    29                                                   input wire signed [IP_WIDTH-1:0] in6_imag,
+    30                                                   input wire signed [IP_WIDTH-1:0] in7_imag,
+    31                                               
+    32                                                   output reg signed [OP_WIDTH-1:0] stage2_out0_r,
+    33                                                   output reg signed [OP_WIDTH-1:0] stage2_out1_r,
+    34                                                   output reg signed [OP_WIDTH-1:0] stage2_out2_r,
+    35                                                   output reg signed [OP_WIDTH-1:0] stage2_out3_r,
+    36                                                   output reg signed [OP_WIDTH-1:0] stage2_out4_r,
+    37                                                   output reg signed [OP_WIDTH-1:0] stage2_out5_r,
+    38                                                   output reg signed [OP_WIDTH-1:0] stage2_out6_r,
+    39                                                   output reg signed [OP_WIDTH-1:0] stage2_out7_r,
+    40                                                   output reg signed [OP_WIDTH-1:0] stage2_out0_imag,
+    41                                                   output reg signed [OP_WIDTH-1:0] stage2_out1_imag,
+    42                                                   output reg signed [OP_WIDTH-1:0] stage2_out2_imag,
+    43                                                   output reg signed [OP_WIDTH-1:0] stage2_out3_imag,
+    44                                                   output reg signed [OP_WIDTH-1:0] stage2_out4_imag,
+    45                                                   output reg signed [OP_WIDTH-1:0] stage2_out5_imag,
+    46                                                   output reg signed [OP_WIDTH-1:0] stage2_out6_imag,
+    47                                                   output reg signed [OP_WIDTH-1:0] stage2_out7_imag
+    48                                                 );
+    49                                               
+    50                                                 // --------------------------------------------------------
+    51                                                 // Twiddle multiply for groups
+    52                                                 // For (1,3) and (5,7), multiply second input by -j
+    53                                                 // directly (a + jb) * (-j) =  b - ja --> instead of using a complex multiplier
+    54                                                 // --------------------------------------------------------
+    55                                               
+    56                                                 // Twiddle applied versions of inputs
+    57                                                 wire signed [IP_WIDTH-1:0] w2_r, w2_i;
+    58                                                 wire signed [IP_WIDTH-1:0] w3_r, w3_i;
+    59                                                 wire signed [IP_WIDTH-1:0] w6_r, w6_i;
+    60                                                 wire signed [IP_WIDTH-1:0] w7_r, w7_i;
+    61                                               
+    62                                                 // multiply in2, in3, in6, in7 by twiddles
+    63                                                 assign w2_r = in2_r;        // twiddle = 1
+    64                                                 assign w2_i = in2_imag;
+    65                                               
+    66                                                 assign w3_r =  in3_imag;    // twiddle = -j
+    67              1                        104       assign w3_i = -in3_r;
+    68                                               
+    69                                                 assign w6_r = in6_r;        // twiddle = 1
+    70                                                 assign w6_i = in6_imag;
+    71                                               
+    72                                                 assign w7_r =  in7_imag;    // twiddle = -j
+    73              1                        104       assign w7_i = -in7_r;
+    74                                               
+    75                                                 // --------------------------------------------------------
+    76                                                 // Butterfly outputs: (a+b), (a-b)
+    77                                                 // --------------------------------------------------------
+    78                                                 wire [OP_WIDTH-1:0] temp_r [0:7];
+    79                                                 wire [OP_WIDTH-1:0] temp_i [0:7];
+    80                                                 wire overflow [0:7];
+    81                                                 wire overflow_i [0:7];
+    82                                               
+    83                                                 // Butterfly (0,2)
+    84                                                 fxp_addsub #(WI_INT, WI_FRAC, WI_INT, WI_FRAC, WO_INT, WO_FRAC, ROUND)
+    85                                                            add0_r (.operand_a(in0_r), .operand_b(w2_r), .subtract(1'b0), .result(temp_r[0]), .overflow(overflow[0]));
+    86                                                 fxp_addsub #(WI_INT, WI_FRAC, WI_INT, WI_FRAC, WO_INT, WO_FRAC, ROUND)
+    87                                                            sub0_r (.operand_a(in0_r), .operand_b(w2_r), .subtract(1'b1), .result(temp_r[2]), .overflow(overflow[2]));
+    88                                               
+    89                                                 fxp_addsub #(WI_INT, WI_FRAC, WI_INT, WI_FRAC, WO_INT, WO_FRAC, ROUND)
+    90                                                            add0_i (.operand_a(in0_imag), .operand_b(w2_i), .subtract(1'b0), .result(temp_i[0]), .overflow(overflow_i[0]));
+    91                                                 fxp_addsub #(WI_INT, WI_FRAC, WI_INT, WI_FRAC, WO_INT, WO_FRAC, ROUND)
+    92                                                            sub0_i (.operand_a(in0_imag), .operand_b(w2_i), .subtract(1'b1), .result(temp_i[2]), .overflow(overflow_i[2]));
+    93                                               
+    94                                                 // Butterfly (1,3)
+    95                                                 fxp_addsub #(WI_INT, WI_FRAC, WI_INT, WI_FRAC, WO_INT, WO_FRAC, ROUND)
+    96                                                            add1_r (.operand_a(in1_r), .operand_b(w3_r), .subtract(1'b0), .result(temp_r[1]), .overflow(overflow[1]));
+    97                                                 fxp_addsub #(WI_INT, WI_FRAC, WI_INT, WI_FRAC, WO_INT, WO_FRAC, ROUND)
+    98                                                            sub1_r (.operand_a(in1_r), .operand_b(w3_r), .subtract(1'b1), .result(temp_r[3]), .overflow(overflow[3]));
+    99                                               
+    100                                                fxp_addsub #(WI_INT, WI_FRAC, WI_INT, WI_FRAC, WO_INT, WO_FRAC, ROUND)
+    101                                                           add1_i (.operand_a(in1_imag), .operand_b(w3_i), .subtract(1'b0), .result(temp_i[1]), .overflow(overflow_i[1]));
+    102                                                fxp_addsub #(WI_INT, WI_FRAC, WI_INT, WI_FRAC, WO_INT, WO_FRAC, ROUND)
+    103                                                           sub1_i (.operand_a(in1_imag), .operand_b(w3_i), .subtract(1'b1), .result(temp_i[3]), .overflow(overflow_i[3]));
+    104                                              
+    105                                                // Butterfly (4,6)
+    106                                                fxp_addsub #(WI_INT, WI_FRAC, WI_INT, WI_FRAC, WO_INT, WO_FRAC, ROUND)
+    107                                                           add2_r (.operand_a(in4_r), .operand_b(w6_r), .subtract(1'b0), .result(temp_r[4]), .overflow(overflow[4]));
+    108                                                fxp_addsub #(WI_INT, WI_FRAC, WI_INT, WI_FRAC, WO_INT, WO_FRAC, ROUND)
+    109                                                           sub2_r (.operand_a(in4_r), .operand_b(w6_r), .subtract(1'b1), .result(temp_r[6]), .overflow(overflow[6]));
+    110                                              
+    111                                                fxp_addsub #(WI_INT, WI_FRAC, WI_INT, WI_FRAC, WO_INT, WO_FRAC, ROUND)
+    112                                                           add2_i (.operand_a(in4_imag), .operand_b(w6_i), .subtract(1'b0), .result(temp_i[4]), .overflow(overflow_i[4]));
+    113                                                fxp_addsub #(WI_INT, WI_FRAC, WI_INT, WI_FRAC, WO_INT, WO_FRAC, ROUND)
+    114                                                           sub2_i (.operand_a(in4_imag), .operand_b(w6_i), .subtract(1'b1), .result(temp_i[6]), .overflow(overflow_i[6]));
+    115                                              
+    116                                                // Butterfly (5,7)
+    117                                                fxp_addsub #(WI_INT, WI_FRAC, WI_INT, WI_FRAC, WO_INT, WO_FRAC, ROUND)
+    118                                                           add3_r (.operand_a(in5_r), .operand_b(w7_r), .subtract(1'b0), .result(temp_r[5]), .overflow(overflow[5]));
+    119                                                fxp_addsub #(WI_INT, WI_FRAC, WI_INT, WI_FRAC, WO_INT, WO_FRAC, ROUND)
+    120                                                           sub3_r (.operand_a(in5_r), .operand_b(w7_r), .subtract(1'b1), .result(temp_r[7]), .overflow(overflow[7]));
+    121                                              
+    122                                                fxp_addsub #(WI_INT, WI_FRAC, WI_INT, WI_FRAC, WO_INT, WO_FRAC, ROUND)
+    123                                                           add3_i (.operand_a(in5_imag), .operand_b(w7_i), .subtract(1'b0), .result(temp_i[5]), .overflow(overflow_i[5]));
+    124                                                fxp_addsub #(WI_INT, WI_FRAC, WI_INT, WI_FRAC, WO_INT, WO_FRAC, ROUND)
+    125                                                           sub3_i (.operand_a(in5_imag), .operand_b(w7_i), .subtract(1'b1), .result(temp_i[7]), .overflow(overflow_i[7]));
+    126                                              
+    127             1                        106       always @(posedge clk or negedge rst_n)
+    128                                                begin
+    129                                                  if (!rst_n)
+    130                                                  begin
+    131             1                          2           stage2_out0_r <= 0;
+    132             1                          2           stage2_out0_imag <= 0;
+    133             1                          2           stage2_out1_r <= 0;
+    134             1                          2           stage2_out1_imag <= 0;
+    135             1                          2           stage2_out2_r <= 0;
+    136             1                          2           stage2_out2_imag <= 0;
+    137             1                          2           stage2_out3_r <= 0;
+    138             1                          2           stage2_out3_imag <= 0;
+    139             1                          2           stage2_out4_r <= 0;
+    140             1                          2           stage2_out4_imag <= 0;
+    141             1                          2           stage2_out5_r <= 0;
+    142             1                          2           stage2_out5_imag <= 0;
+    143             1                          2           stage2_out6_r <= 0;
+    144             1                          2           stage2_out6_imag <= 0;
+    145             1                          2           stage2_out7_r <= 0;
+    146             1                          2           stage2_out7_imag <= 0;
+    147                                                  end
+    148                                                  else
+    149                                                  begin
+    150             1                        104           stage2_out0_r <= temp_r[0];
+    151             1                        104           stage2_out0_imag <= temp_i[0];
+    152             1                        104           stage2_out1_r <= temp_r[1];
+    153             1                        104           stage2_out1_imag <= temp_i[1];
+    154             1                        104           stage2_out2_r <= temp_r[2];
+    155             1                        104           stage2_out2_imag <= temp_i[2];
+    156             1                        104           stage2_out3_r <= temp_r[3];
+    157             1                        104           stage2_out3_imag <= temp_i[3];
+    158             1                        104           stage2_out4_r <= temp_r[4];
+    159             1                        104           stage2_out4_imag <= temp_i[4];
+    160             1                        104           stage2_out5_r <= temp_r[5];
+    161             1                        104           stage2_out5_imag <= temp_i[5];
+    162             1                        104           stage2_out6_r <= temp_r[6];
+    163             1                        104           stage2_out6_imag <= temp_i[6];
+    164             1                        104           stage2_out7_r <= temp_r[7];
+    165             1                        104           stage2_out7_imag <= temp_i[7];
+    166                                                  end
+    167                                                end
+    168                                              
+    169                                              endmodule
+
+Branch Coverage:
+    Enabled Coverage            Active      Hits    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    Branches                         2         2         0    100.00
+
+================================Branch Details================================
+
+Branch Coverage for file Butterfly_stage2.v --
+
+------------------------------------IF Branch------------------------------------
+    129                                      106     Count coming in to IF
+    129             1                          2         if (!rst_n)
+    148             1                        104         else
+Branch totals: 2 hits of 2 branches = 100.00%
+
+
+
+=================================================================================
+=== File: Butterfly_stage3.v
+=================================================================================
+Statement Coverage:
+    Enabled Coverage            Active      Hits    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    Stmts                           69        69         0    100.00
+
+================================Statement Details================================
+
+Statement Coverage for file Butterfly_stage3.v --
+
+    1                                                // ============================================================================
+    2                                                // stage3_butterfly.sv
+    3                                                // Stage-3 (final) butterfly for 8-point DIT FFT
+    4                                                // Inputs:  Q7.5  (IP_WIDTH = 12)
+    5                                                // Outputs: Q8.4  (OP_WIDTH = 12)
+    6                                                // Twiddles: Q2.10
+    7                                                // ============================================================================
+    8                                                module stage3_butterfly #(
+    9                                                    parameter WIDTH   = 12,
+    10                                                   parameter WI_INT  = 7,                       // data integer bits (Q7.5)
+    11                                                   parameter WI_FRAC = WIDTH - WI_INT,
+    12                                                   parameter WO_INT  = 8,                       // output integer bits (Q8.4)
+    13                                                   parameter WO_FRAC = WIDTH - WO_INT,
+    14                                                   parameter OP_WIDTH = WO_INT + WO_FRAC,
+    15                                                   parameter IP_WIDTH = WI_INT + WI_FRAC,
+    16                                                   parameter TW_INT  = 2,                       // twiddle integer bits (Q2.10)
+    17                                                   parameter TW_FRAC = 10,
+    18                                                   parameter ROUND   = 0
+    19                                                 )(
+    20                                                   input  wire clk,
+    21                                                   input  wire rst_n,
+    22                                                   input  wire signed [IP_WIDTH-1:0] in0_r,
+    23                                                   input  wire signed [IP_WIDTH-1:0] in1_r,
+    24                                                   input  wire signed [IP_WIDTH-1:0] in2_r,
+    25                                                   input  wire signed [IP_WIDTH-1:0] in3_r,
+    26                                                   input  wire signed [IP_WIDTH-1:0] in4_r,
+    27                                                   input  wire signed [IP_WIDTH-1:0] in5_r,
+    28                                                   input  wire signed [IP_WIDTH-1:0] in6_r,
+    29                                                   input  wire signed [IP_WIDTH-1:0] in7_r,
+    30                                                   input  wire signed [IP_WIDTH-1:0] in0_imag,
+    31                                                   input  wire signed [IP_WIDTH-1:0] in1_imag,
+    32                                                   input  wire signed [IP_WIDTH-1:0] in2_imag,
+    33                                                   input  wire signed [IP_WIDTH-1:0] in3_imag,
+    34                                                   input  wire signed [IP_WIDTH-1:0] in4_imag,
+    35                                                   input  wire signed [IP_WIDTH-1:0] in5_imag,
+    36                                                   input  wire signed [IP_WIDTH-1:0] in6_imag,
+    37                                                   input  wire signed [IP_WIDTH-1:0] in7_imag,
+    38                                               
+    39                                                   // Twiddle inputs
+    40                                                   input  wire signed [TW_INT+TW_FRAC-1:0] tw0_r,
+    41                                                   input  wire signed [TW_INT+TW_FRAC-1:0] tw0_i,
+    42                                                   input  wire signed [TW_INT+TW_FRAC-1:0] tw1_r,
+    43                                                   input  wire signed [TW_INT+TW_FRAC-1:0] tw1_i,
+    44                                                   input  wire signed [TW_INT+TW_FRAC-1:0] tw2_r,
+    45                                                   input  wire signed [TW_INT+TW_FRAC-1:0] tw2_i,
+    46                                                   input  wire signed [TW_INT+TW_FRAC-1:0] tw3_r,
+    47                                                   input  wire signed [TW_INT+TW_FRAC-1:0] tw3_i,
+    48                                               
+    49                                                   output reg signed [OP_WIDTH-1:0] stage3_out0_r,
+    50                                                   output reg signed [OP_WIDTH-1:0] stage3_out1_r,
+    51                                                   output reg signed [OP_WIDTH-1:0] stage3_out2_r,
+    52                                                   output reg signed [OP_WIDTH-1:0] stage3_out3_r,
+    53                                                   output reg signed [OP_WIDTH-1:0] stage3_out4_r,
+    54                                                   output reg signed [OP_WIDTH-1:0] stage3_out5_r,
+    55                                                   output reg signed [OP_WIDTH-1:0] stage3_out6_r,
+    56                                                   output reg signed [OP_WIDTH-1:0] stage3_out7_r,
+    57                                                   output reg signed [OP_WIDTH-1:0] stage3_out0_imag,
+    58                                                   output reg signed [OP_WIDTH-1:0] stage3_out1_imag,
+    59                                                   output reg signed [OP_WIDTH-1:0] stage3_out2_imag,
+    60                                                   output reg signed [OP_WIDTH-1:0] stage3_out3_imag,
+    61                                                   output reg signed [OP_WIDTH-1:0] stage3_out4_imag,
+    62                                                   output reg signed [OP_WIDTH-1:0] stage3_out5_imag,
+    63                                                   output reg signed [OP_WIDTH-1:0] stage3_out6_imag,
+    64                                                   output reg signed [OP_WIDTH-1:0] stage3_out7_imag
+    65                                                 );
+    66                                                 // ------------------------------------------------------------------
+    67                                                 // Intermediate width parameters
+    68                                                 // data Q7.5 * tw Q2.10 -> product Q9.15
+    69                                                 // sum/diff of two products -> Q10.15
+    70                                                 // final zoom -> Q8.4
+    71                                                 // ------------------------------------------------------------------
+    72                                                 localparam PROD_INT  = WI_INT + TW_INT;    // 9
+    73                                                 localparam PROD_FRAC = WI_FRAC + TW_FRAC;  // 15
+    74                                                 localparam PROD_W    = PROD_INT + PROD_FRAC; // 24
+    75                                               
+    76                                                 localparam SUM_INT   = PROD_INT + 1;       // 10
+    77                                                 localparam SUM_FRAC  = PROD_FRAC;          // 15
+    78                                                 localparam SUM_W     = SUM_INT + SUM_FRAC; // 25
+    79                                               
+    80                                                 // ------------------------------------------------------------------
+    81                                                 // Products (explicit, 4 multiplies per group, 4 groups => 16 fxp_multiplier)
+    82                                                 // But For Group 0 twiddle is 1 --> be handled without multipliers
+    83                                                 // Same for Group 2 twiddle is -j --> handled without multipliers
+    84                                                 // Therefore, number of multipliers used is 8
+    85                                                 // Each product is signed [PROD_W-1:0]
+    86                                                 // naming: p_<group>_<term>
+    87                                                 // term: ar_cr (a_r*tw_r), ai_di (a_i*tw_i), ar_di (a_r*tw_i), ai_cr (a_i*tw_r)
+    88                                                 // ------------------------------------------------------------------
+    89                                               
+    90                                                 // --- GROUP 0 (twiddle = 1 + j0) handled WITHOUT multipliers ----
+    91                                                 // For twiddle = 1:
+    92                                                 //   p0_ar_cr = in4_r * 1
+    93                                                 //   p0_ai_cr = in4_imag * 1
+    94                                                 //   p0_ai_di = 0
+    95                                                 //   p0_ar_di = 0
+    96                                                 // We produce these at the product Q scale by sign-extending and left-shifting
+    97                                                 // the input (Q7.5 -> Q9.15) so downstream subtraction/addition stays identical.
+    98                                               
+    99              1                        104       wire signed [PROD_W-1:0] p0_ar_cr = $signed({{(PROD_W-IP_WIDTH){in4_r[IP_WIDTH-1]}}, in4_r}) <<< (PROD_FRAC - WI_FRAC);
+    100             1                        102       wire signed [PROD_W-1:0] p0_ai_cr = $signed({{(PROD_W-IP_WIDTH){in4_imag[IP_WIDTH-1]}}, in4_imag}) <<< (PROD_FRAC - WI_FRAC);
+    101                                                wire signed [PROD_W-1:0] p0_ai_di = $signed({PROD_W{1'b0}});
+    102                                                wire signed [PROD_W-1:0] p0_ar_di = $signed({PROD_W{1'b0}});
+    103                                              
+    104                                                // Group 1 (a=in1, b=in5) - general multipliers
+    105                                                wire signed [PROD_W-1:0] p1_ar_cr;
+    106                                                wire signed [PROD_W-1:0] p1_ai_di;
+    107                                                wire signed [PROD_W-1:0] p1_ar_di;
+    108                                                wire signed [PROD_W-1:0] p1_ai_cr;
+    109                                              
+    110                                                fxp_multiplier #(.A_INT(WI_INT), .A_FRAC(WI_FRAC), .B_INT(TW_INT), .B_FRAC(TW_FRAC),
+    111                                                                 .OUT_INT(PROD_INT), .OUT_FRAC(PROD_FRAC), .ROUNDING(ROUND))
+    112                                                               mul1_ar_cr (.operand_a(in5_r), .operand_b(tw1_r), .result(p1_ar_cr), .overflow());
+    113                                              
+    114                                                fxp_multiplier #(.A_INT(WI_INT), .A_FRAC(WI_FRAC), .B_INT(TW_INT), .B_FRAC(TW_FRAC),
+    115                                                                 .OUT_INT(PROD_INT), .OUT_FRAC(PROD_FRAC), .ROUNDING(ROUND))
+    116                                                               mul1_ai_di (.operand_a(in5_imag), .operand_b(tw1_i), .result(p1_ai_di), .overflow());
+    117                                              
+    118                                                fxp_multiplier #(.A_INT(WI_INT), .A_FRAC(WI_FRAC), .B_INT(TW_INT), .B_FRAC(TW_FRAC),
+    119                                                                 .OUT_INT(PROD_INT), .OUT_FRAC(PROD_FRAC), .ROUNDING(ROUND))
+    120                                                               mul1_ar_di (.operand_a(in5_r), .operand_b(tw1_i), .result(p1_ar_di), .overflow());
+    121                                              
+    122                                                fxp_multiplier #(.A_INT(WI_INT), .A_FRAC(WI_FRAC), .B_INT(TW_INT), .B_FRAC(TW_FRAC),
+    123                                                                 .OUT_INT(PROD_INT), .OUT_FRAC(PROD_FRAC), .ROUNDING(ROUND))
+    124                                                               mul1_ai_cr (.operand_a(in5_imag), .operand_b(tw1_r), .result(p1_ai_cr), .overflow());
+    125                                              
+    126                                                // --- GROUP 2 (twiddle = 0 - j1) handled WITHOUT multipliers ----
+    127                                                // For twiddle = -j (tw_r=0, tw_i=-1):
+    128                                                //   p2_ar_cr = 0
+    129                                                //   p2_ai_cr = 0
+    130                                                //   p2_ai_di = in6_imag * (-1)
+    131                                                //   p2_ar_di = in6_r    * (-1)
+    132                                                // Implement by sign-extend+shift into product Q scale and then negate.
+    133                                                wire signed [PROD_W-1:0] p2_ar_cr = $signed({PROD_W{1'b0}});
+    134                                                wire signed [PROD_W-1:0] p2_ai_cr = $signed({PROD_W{1'b0}});
+    135             1                        102       wire signed [PROD_W-1:0] p2_ai_di = -($signed({{(PROD_W-IP_WIDTH){in6_imag[IP_WIDTH-1]}}, in6_imag}) <<< (PROD_FRAC - WI_FRAC));
+    136             1                        103       wire signed [PROD_W-1:0] p2_ar_di = -($signed({{(PROD_W-IP_WIDTH){in6_r[IP_WIDTH-1]}}, in6_r}) <<< (PROD_FRAC - WI_FRAC));
+    137                                              
+    138                                                // Group 3 (a=in3, b=in7) - general multipliers
+    139                                                wire signed [PROD_W-1:0] p3_ar_cr;
+    140                                                wire signed [PROD_W-1:0] p3_ai_di;
+    141                                                wire signed [PROD_W-1:0] p3_ar_di;
+    142                                                wire signed [PROD_W-1:0] p3_ai_cr;
+    143                                              
+    144                                                fxp_multiplier #(.A_INT(WI_INT), .A_FRAC(WI_FRAC), .B_INT(TW_INT), .B_FRAC(TW_FRAC),
+    145                                                                 .OUT_INT(PROD_INT), .OUT_FRAC(PROD_FRAC), .ROUNDING(ROUND))
+    146                                                               mul3_ar_cr (.operand_a(in7_r), .operand_b(tw3_r), .result(p3_ar_cr), .overflow());
+    147                                              
+    148                                                fxp_multiplier #(.A_INT(WI_INT), .A_FRAC(WI_FRAC), .B_INT(TW_INT), .B_FRAC(TW_FRAC),
+    149                                                                 .OUT_INT(PROD_INT), .OUT_FRAC(PROD_FRAC), .ROUNDING(ROUND))
+    150                                                               mul3_ai_di (.operand_a(in7_imag), .operand_b(tw3_i), .result(p3_ai_di), .overflow());
+    151                                              
+    152                                                fxp_multiplier #(.A_INT(WI_INT), .A_FRAC(WI_FRAC), .B_INT(TW_INT), .B_FRAC(TW_FRAC),
+    153                                                                 .OUT_INT(PROD_INT), .OUT_FRAC(PROD_FRAC), .ROUNDING(ROUND))
+    154                                                               mul3_ar_di (.operand_a(in7_r), .operand_b(tw3_i), .result(p3_ar_di), .overflow());
+    155                                              
+    156                                                fxp_multiplier #(.A_INT(WI_INT), .A_FRAC(WI_FRAC), .B_INT(TW_INT), .B_FRAC(TW_FRAC),
+    157                                                                 .OUT_INT(PROD_INT), .OUT_FRAC(PROD_FRAC), .ROUNDING(ROUND))
+    158                                                               mul3_ai_cr (.operand_a(in7_imag), .operand_b(tw3_r), .result(p3_ai_cr), .overflow());
+    159                                              
+    160                                                // ------------------------------------------------------------------
+    161                                                // Combine products into complex product (wr_tmp, wi_tmp) for each group
+    162                                                // wr_tmp = ar_cr - ai_di
+    163                                                // wi_tmp = ar_di + ai_cr
+    164                                                // ------------------------------------------------------------------
+    165             1                        105       wire signed [SUM_W-1:0] wr0_tmp = $signed(p0_ar_cr) - $signed(p0_ai_di);
+    166             1                        103       wire signed [SUM_W-1:0] wi0_tmp = $signed(p0_ar_di) + $signed(p0_ai_cr);
+    167                                              
+    168             1                        104       wire signed [SUM_W-1:0] wr1_tmp = $signed(p1_ar_cr) - $signed(p1_ai_di);
+    169             1                        104       wire signed [SUM_W-1:0] wi1_tmp = $signed(p1_ar_di) + $signed(p1_ai_cr);
+    170                                              
+    171             1                        103       wire signed [SUM_W-1:0] wr2_tmp = $signed(p2_ar_cr) - $signed(p2_ai_di);
+    172             1                        104       wire signed [SUM_W-1:0] wi2_tmp = $signed(p2_ar_di) + $signed(p2_ai_cr);
+    173                                              
+    174             1                        104       wire signed [SUM_W-1:0] wr3_tmp = $signed(p3_ar_cr) - $signed(p3_ai_di);
+    175             1                        104       wire signed [SUM_W-1:0] wi3_tmp = $signed(p3_ar_di) + $signed(p3_ai_cr);
+    176                                              
+    177                                                // ------------------------------------------------------------------
+    178                                                // Align 'a' (Q7.5) into SUM scale (Q10.15): left-shift fractional part
+    179                                                // SHIFT = SUM_FRAC - WI_FRAC = 15 - 5 = 10
+    180                                                // We sign-extend 'a' into SUM_W then shift left by 10 by concatenation
+    181                                                // ------------------------------------------------------------------
+    182             1                        104       wire signed [SUM_W-1:0] a0_r_wide = $signed({{(SUM_W-IP_WIDTH){in0_r[IP_WIDTH-1]}}, in0_r}) <<< (SUM_FRAC - WI_FRAC);
+    183             1                        102       wire signed [SUM_W-1:0] a0_i_wide = $signed({{(SUM_W-IP_WIDTH){in0_imag[IP_WIDTH-1]}}, in0_imag}) <<< (SUM_FRAC - WI_FRAC);
+    184                                              
+    185             1                        104       wire signed [SUM_W-1:0] a1_r_wide = $signed({{(SUM_W-IP_WIDTH){in1_r[IP_WIDTH-1]}}, in1_r}) <<< (SUM_FRAC - WI_FRAC);
+    186             1                        104       wire signed [SUM_W-1:0] a1_i_wide = $signed({{(SUM_W-IP_WIDTH){in1_imag[IP_WIDTH-1]}}, in1_imag}) <<< (SUM_FRAC - WI_FRAC);
+    187                                              
+    188             1                        103       wire signed [SUM_W-1:0] a2_r_wide = $signed({{(SUM_W-IP_WIDTH){in2_r[IP_WIDTH-1]}}, in2_r}) <<< (SUM_FRAC - WI_FRAC);
+    189             1                        102       wire signed [SUM_W-1:0] a2_i_wide = $signed({{(SUM_W-IP_WIDTH){in2_imag[IP_WIDTH-1]}}, in2_imag}) <<< (SUM_FRAC - WI_FRAC);
+    190                                              
+    191             1                        104       wire signed [SUM_W-1:0] a3_r_wide = $signed({{(SUM_W-IP_WIDTH){in3_r[IP_WIDTH-1]}}, in3_r}) <<< (SUM_FRAC - WI_FRAC);
+    192             1                        104       wire signed [SUM_W-1:0] a3_i_wide = $signed({{(SUM_W-IP_WIDTH){in3_imag[IP_WIDTH-1]}}, in3_imag}) <<< (SUM_FRAC - WI_FRAC);
+    193                                              
+    194                                                // ------------------------------------------------------------------
+    195                                                // Compute A = a + product, B = a - product for each group (wide)
+    196                                                // Then zoom (SUM_INT:SUM_FRAC -> WO_INT:WO_FRAC) using fxp_zoom
+    197                                                // ------------------------------------------------------------------
+    198                                              
+    199                                                // Group 0: positions 0 and 4
+    200             1                        105       wire signed [SUM_W-1:0] A0_r_wide = a0_r_wide + wr0_tmp;
+    201             1                        103       wire signed [SUM_W-1:0] A0_i_wide = a0_i_wide + wi0_tmp;
+    202             1                        105       wire signed [SUM_W-1:0] B0_r_wide = a0_r_wide - wr0_tmp;
+    203             1                        103       wire signed [SUM_W-1:0] B0_i_wide = a0_i_wide - wi0_tmp;
+    204                                              
+    205                                                wire [OP_WIDTH-1:0] temp_r [0:7];
+    206                                                wire [OP_WIDTH-1:0] temp_i [0:7];
+    207                                              
+    208                                                fxp_zoom #(.INPUT_INT(SUM_INT), .INPUT_FRAC(SUM_FRAC), .OUTPUT_INT(WO_INT), .OUTPUT_FRAC(WO_FRAC), .ROUNDING(ROUND))
+    209                                                         zoom0_A_r (.in_val((A0_r_wide)), .out_val(temp_r[0]), .overflow());
+    210                                                fxp_zoom #(.INPUT_INT(SUM_INT), .INPUT_FRAC(SUM_FRAC), .OUTPUT_INT(WO_INT), .OUTPUT_FRAC(WO_FRAC), .ROUNDING(ROUND))
+    211                                                         zoom0_A_i (.in_val((A0_i_wide)), .out_val(temp_i[0]), .overflow());
+    212                                                fxp_zoom #(.INPUT_INT(SUM_INT), .INPUT_FRAC(SUM_FRAC), .OUTPUT_INT(WO_INT), .OUTPUT_FRAC(WO_FRAC), .ROUNDING(ROUND))
+    213                                                         zoom0_B_r (.in_val((B0_r_wide)), .out_val(temp_r[4]), .overflow());
+    214                                                fxp_zoom #(.INPUT_INT(SUM_INT), .INPUT_FRAC(SUM_FRAC), .OUTPUT_INT(WO_INT), .OUTPUT_FRAC(WO_FRAC), .ROUNDING(ROUND))
+    215                                                         zoom0_B_i (.in_val((B0_i_wide)), .out_val(temp_i[4]), .overflow());
+    216                                              
+    217                                                // Group 1: positions 1 and 5
+    218             1                        207       wire signed [SUM_W-1:0] A1_r_wide = a1_r_wide + wr1_tmp;
+    219             1                        207       wire signed [SUM_W-1:0] A1_i_wide = a1_i_wide + wi1_tmp;
+    220             1                        207       wire signed [SUM_W-1:0] B1_r_wide = a1_r_wide - wr1_tmp;
+    221             1                        207       wire signed [SUM_W-1:0] B1_i_wide = a1_i_wide - wi1_tmp;
+    222                                              
+    223                                                fxp_zoom #(.INPUT_INT(SUM_INT), .INPUT_FRAC(SUM_FRAC), .OUTPUT_INT(WO_INT), .OUTPUT_FRAC(WO_FRAC), .ROUNDING(ROUND))
+    224                                                         zoom1_A_r (.in_val((A1_r_wide)), .out_val(temp_r[1]), .overflow());
+    225                                                fxp_zoom #(.INPUT_INT(SUM_INT), .INPUT_FRAC(SUM_FRAC), .OUTPUT_INT(WO_INT), .OUTPUT_FRAC(WO_FRAC), .ROUNDING(ROUND))
+    226                                                         zoom1_A_i (.in_val((A1_i_wide)), .out_val(temp_i[1]), .overflow());
+    227                                                fxp_zoom #(.INPUT_INT(SUM_INT), .INPUT_FRAC(SUM_FRAC), .OUTPUT_INT(WO_INT), .OUTPUT_FRAC(WO_FRAC), .ROUNDING(ROUND))
+    228                                                         zoom1_B_r (.in_val((B1_r_wide)), .out_val(temp_r[5]), .overflow());
+    229                                                fxp_zoom #(.INPUT_INT(SUM_INT), .INPUT_FRAC(SUM_FRAC), .OUTPUT_INT(WO_INT), .OUTPUT_FRAC(WO_FRAC), .ROUNDING(ROUND))
+    230                                                         zoom1_B_i (.in_val((B1_i_wide)), .out_val(temp_i[5]), .overflow());
+    231                                              
+    232                                                // Group 2: positions 2 and 6
+    233             1                        104       wire signed [SUM_W-1:0] A2_r_wide = a2_r_wide + wr2_tmp;
+    234             1                        104       wire signed [SUM_W-1:0] A2_i_wide = a2_i_wide + wi2_tmp;
+    235             1                        104       wire signed [SUM_W-1:0] B2_r_wide = a2_r_wide - wr2_tmp;
+    236             1                        104       wire signed [SUM_W-1:0] B2_i_wide = a2_i_wide - wi2_tmp;
+    237                                              
+    238                                                fxp_zoom #(.INPUT_INT(SUM_INT), .INPUT_FRAC(SUM_FRAC), .OUTPUT_INT(WO_INT), .OUTPUT_FRAC(WO_FRAC), .ROUNDING(ROUND))
+    239                                                         zoom2_A_r (.in_val((A2_r_wide)), .out_val(temp_r[2]), .overflow());
+    240                                                fxp_zoom #(.INPUT_INT(SUM_INT), .INPUT_FRAC(SUM_FRAC), .OUTPUT_INT(WO_INT), .OUTPUT_FRAC(WO_FRAC), .ROUNDING(ROUND))
+    241                                                         zoom2_A_i (.in_val((A2_i_wide)), .out_val(temp_i[2]), .overflow());
+    242                                                fxp_zoom #(.INPUT_INT(SUM_INT), .INPUT_FRAC(SUM_FRAC), .OUTPUT_INT(WO_INT), .OUTPUT_FRAC(WO_FRAC), .ROUNDING(ROUND))
+    243                                                         zoom2_B_r (.in_val((B2_r_wide)), .out_val(temp_r[6]), .overflow());
+    244                                                fxp_zoom #(.INPUT_INT(SUM_INT), .INPUT_FRAC(SUM_FRAC), .OUTPUT_INT(WO_INT), .OUTPUT_FRAC(WO_FRAC), .ROUNDING(ROUND))
+    245                                                         zoom2_B_i (.in_val((B2_i_wide)), .out_val(temp_i[6]), .overflow());
+    246                                              
+    247                                                // Group 3: positions 3 and 7
+    248             1                        207       wire signed [SUM_W-1:0] A3_r_wide = a3_r_wide + wr3_tmp;
+    249             1                        207       wire signed [SUM_W-1:0] A3_i_wide = a3_i_wide + wi3_tmp;
+    250             1                        207       wire signed [SUM_W-1:0] B3_r_wide = a3_r_wide - wr3_tmp;
+    251             1                        207       wire signed [SUM_W-1:0] B3_i_wide = a3_i_wide - wi3_tmp;
+    252                                              
+    253                                                fxp_zoom #(.INPUT_INT(SUM_INT), .INPUT_FRAC(SUM_FRAC), .OUTPUT_INT(WO_INT), .OUTPUT_FRAC(WO_FRAC), .ROUNDING(ROUND))
+    254                                                         zoom3_A_r (.in_val((A3_r_wide)), .out_val(temp_r[3]), .overflow());
+    255                                                fxp_zoom #(.INPUT_INT(SUM_INT), .INPUT_FRAC(SUM_FRAC), .OUTPUT_INT(WO_INT), .OUTPUT_FRAC(WO_FRAC), .ROUNDING(ROUND))
+    256                                                         zoom3_A_i (.in_val((A3_i_wide)), .out_val(temp_i[3]), .overflow());
+    257                                                fxp_zoom #(.INPUT_INT(SUM_INT), .INPUT_FRAC(SUM_FRAC), .OUTPUT_INT(WO_INT), .OUTPUT_FRAC(WO_FRAC), .ROUNDING(ROUND))
+    258                                                         zoom3_B_r (.in_val((B3_r_wide)), .out_val(temp_r[7]), .overflow());
+    259                                                fxp_zoom #(.INPUT_INT(SUM_INT), .INPUT_FRAC(SUM_FRAC), .OUTPUT_INT(WO_INT), .OUTPUT_FRAC(WO_FRAC), .ROUNDING(ROUND))
+    260                                                         zoom3_B_i (.in_val((B3_i_wide)), .out_val(temp_i[7]), .overflow());
+    261                                              
+    262             1                        106       always @(posedge clk or negedge rst_n)
+    263                                                begin
+    264                                                  if (!rst_n)
+    265                                                  begin
+    266             1                          2           stage3_out0_r <= 0;
+    267             1                          2           stage3_out0_imag <= 0;
+    268             1                          2           stage3_out1_r <= 0;
+    269             1                          2           stage3_out1_imag <= 0;
+    270             1                          2           stage3_out2_r <= 0;
+    271             1                          2           stage3_out2_imag <= 0;
+    272             1                          2           stage3_out3_r <= 0;
+    273             1                          2           stage3_out3_imag <= 0;
+    274             1                          2           stage3_out4_r <= 0;
+    275             1                          2           stage3_out4_imag <= 0;
+    276             1                          2           stage3_out5_r <= 0;
+    277             1                          2           stage3_out5_imag <= 0;
+    278             1                          2           stage3_out6_r <= 0;
+    279             1                          2           stage3_out6_imag <= 0;
+    280             1                          2           stage3_out7_r <= 0;
+    281             1                          2           stage3_out7_imag <= 0;
+    282                                                  end
+    283                                                  else
+    284                                                  begin
+    285             1                        104           stage3_out0_r <= temp_r[0];
+    286             1                        104           stage3_out0_imag <= temp_i[0];
+    287             1                        104           stage3_out1_r <= temp_r[1];
+    288             1                        104           stage3_out1_imag <= temp_i[1];
+    289             1                        104           stage3_out2_r <= temp_r[2];
+    290             1                        104           stage3_out2_imag <= temp_i[2];
+    291             1                        104           stage3_out3_r <= temp_r[3];
+    292             1                        104           stage3_out3_imag <= temp_i[3];
+    293             1                        104           stage3_out4_r <= temp_r[4];
+    294             1                        104           stage3_out4_imag <= temp_i[4];
+    295             1                        104           stage3_out5_r <= temp_r[5];
+    296             1                        104           stage3_out5_imag <= temp_i[5];
+    297             1                        104           stage3_out6_r <= temp_r[6];
+    298             1                        104           stage3_out6_imag <= temp_i[6];
+    299             1                        104           stage3_out7_r <= temp_r[7];
+    300             1                        104           stage3_out7_imag <= temp_i[7];
+    301                                                  end
+    302                                                end
+    303                                              endmodule
+
+Branch Coverage:
+    Enabled Coverage            Active      Hits    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    Branches                         2         2         0    100.00
+
+================================Branch Details================================
+
+Branch Coverage for file Butterfly_stage3.v --
+
+------------------------------------IF Branch------------------------------------
+    264                                      106     Count coming in to IF
+    264             1                          2         if (!rst_n)
+    283             1                        104         else
+Branch totals: 2 hits of 2 branches = 100.00%
+
+
+
+=================================================================================
+=== File: coverage.sv
+=================================================================================
+Statement Coverage:
+    Enabled Coverage            Active      Hits    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    Stmts                           20        20         0    100.00
+
+================================Statement Details================================
+
+Statement Coverage for file coverage.sv --
+
+    1                                                package coverage_pkg;
+    2                                                  import transaction_pkg::*;
+    3                                                
+    4                                                  class fft_coverage;
+    5                                                    // Parameters
+    6                                                    localparam int IPW    = fft_transaction::IP_WIDTH;
+    7                                                    localparam int OPW    = fft_transaction::OP_WIDTH;
+    8                                                    localparam int VECLEN = fft_transaction::VEC_LEN;
+    9                                                
+    10                                                   int                       idx;        
+    11                                                   bit signed [IPW-1:0]      cur_in_r, cur_in_i;
+    12                                                   bit signed [OPW-1:0]      cur_out_r, cur_out_i;
+    13                                                   bit                       cur_mismatch;
+    14                                               
+    15                                                   // ---------- Input coverage ----------
+    16                                                   covergroup cg_inputs with function sample();
+    17                                                     option.per_instance = 1;
+    18                                               
+    19                                                     idx_cp : coverpoint idx { bins lanes[] = {[0:VECLEN-1]}; }
+    20                                               
+    21                                                     in_r_val : coverpoint cur_in_r {
+    22                                                       bins zero      = {0};
+    23                                                       bins small_pos = {[  1:   7]};
+    24                                                       bins small_neg = {[ -7:  -1]};
+    25                                                       bins mid_pos   = {[  8:  63]};
+    26                                                       bins mid_neg   = {[ -63:  -8]};
+    27                                                       bins large_pos = {[ 64: (1<<(IPW-1))-1]};
+    28                                                       bins large_neg = {[ -(1<<(IPW-1)) : -64 ]};
+    29                                                     }
+    30                                               
+    31                                                     in_i_val : coverpoint cur_in_i {
+    32                                                       bins zero      = {0};
+    33                                                       bins small_pos = {[  1:   7]};
+    34                                                       bins small_neg = {[ -7:  -1]};
+    35                                                       bins mid_pos   = {[  8:  63]};
+    36                                                       bins mid_neg   = {[ -63:  -8]};
+    37                                                       bins large_pos = {[ 64: (1<<(IPW-1))-1]};
+    38                                                       bins large_neg = {[ -(1<<(IPW-1)) : -64 ]};
+    39                                                     }
+    40                                                     //in_cross : cross in_r_val, in_i_val;
+    41                                                   endgroup
+    42                                                   // ---------- Output coverage ----------
+    43                                                   covergroup cg_outputs with function sample();
+    44                                                     option.per_instance = 1;
+    45                                               
+    46                                                     idx_cp : coverpoint idx { bins lanes[] = {[0:VECLEN-1]}; }
+    47                                               
+    48                                                     out_r_val : coverpoint cur_out_r {
+    49                                                       bins zero      = {0};
+    50                                                       bins pos       = {[               1 :  (1<<(OPW-1))-1]};
+    51                                                       bins neg       = {[ -(1<<(OPW-1)) :             -1 ]};
+    52                                                     }
+    53                                               
+    54                                                     out_i_val : coverpoint cur_out_i {
+    55                                                       bins zero      = {0};
+    56                                                       bins pos       = {[               1 :  (1<<(OPW-1))-1]};
+    57                                                       bins neg       = {[ -(1<<(OPW-1)) :             -1 ]};
+    58                                                     }
+    59                                                     //out_cross : cross out_r_val, out_i_val;
+    60                                                   endgroup
+    61                                               
+    62                                                   covergroup cg_match with function sample();
+    63                                                     option.per_instance = 1;
+    64                                               
+    65                                                     idx_cp   : coverpoint idx { bins lanes[] = {[0:VECLEN-1]}; }
+    66                                                     result_cp: coverpoint cur_mismatch { bins MATCH = {0}; bins MISMATCH = {1}; }
+    67                                                     //cross_idx_result : cross idx_cp, result_cp;
+    68                                                   endgroup
+    69                                               
+    70                                                   // Constructor
+    71                                                   function new();
+    72              1                          1           cg_inputs  = new();
+    73              1                          1           cg_outputs = new();
+    74              1                          1           cg_match   = new();
+    75                                                   endfunction
+    76                                                   // 1) Inputs-only (call once per transaction)
+    77                                                   function void sample_inputs(fft_transaction tr);
+    78              1                        102           for (int i = 0; i < VECLEN; i++) begin
+    78              2                        816     
+    79              1                        816             idx      = i;
+    80              1                        816             cur_in_r = tr.in_r[i];
+    81              1                        816             cur_in_i = tr.in_i[i];
+    82              1                        816             cg_inputs.sample();
+    83                                                     end
+    84                                                   endfunction
+    85                                               
+    86                                                   // 2) Outputs-only (call once per transaction)
+    87                                                   function void sample_outputs(fft_transaction tr);
+    88              1                        102           for (int i = 0; i < VECLEN; i++) begin
+    88              2                        816     
+    89              1                        816             idx       = i;
+    90              1                        816             cur_out_r = tr.dut_r[i];
+    91              1                        816             cur_out_i = tr.dut_i[i];
+    92              1                        816             cg_outputs.sample();
+    93                                                     end
+    94                                                   endfunction
+    95                                               
+    96                                                   // 3) Match vs mismatch per lane 
+    97                                                   function void sample_compare(fft_transaction gen_tr, fft_transaction mon_tr);
+    98              1                        102           for (int i = 0; i < VECLEN; i++) begin
+    98              2                        816     
+    99              1                        816             idx          = i;
+    100             1                        816             cur_mismatch = ((mon_tr.dut_r[i] !== gen_tr.golden_r[i]) ||
+    101                                                                      (mon_tr.dut_i[i] !== gen_tr.golden_i[i]));
+    102             1                        816             cg_match.sample();
+    103                                                    end
+    104                                                  endfunction
+    105                                                endclass
+    106                                              endpackage
+
+Expression Coverage:
+    Enabled Coverage            Active   Covered    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    FEC Expression Terms             2         2         0    100.00
+
+================================Expression Details================================
+
+Expression Coverage for file coverage.sv --
+
+----------------Focused Expression View-----------------
+Line       100 Item    1  ((mon_tr.dut_r[i] !== gen_tr.golden_r[i]) || (mon_tr.dut_i[i] !== gen_tr.golden_i[i]))
+Expression totals: 2 of 2 input terms covered = 100.00%
+
+                                Input Term   Covered  Reason for no coverage   Hint
+                               -----------  --------  -----------------------  --------------
+  (mon_tr.dut_r[i] !== gen_tr.golden_r[i])         Y
+  (mon_tr.dut_i[i] !== gen_tr.golden_i[i])         Y
+
+     Rows:       Hits  FEC Target                                  Non-masking condition(s)      
+ ---------  ---------  --------------------                        -------------------------     
+  Row   1:          1  (mon_tr.dut_r[i] !== gen_tr.golden_r[i])_0  ~(mon_tr.dut_i[i] !== gen_tr.golden_i[i])
+  Row   2:          1  (mon_tr.dut_r[i] !== gen_tr.golden_r[i])_1  -                             
+  Row   3:          1  (mon_tr.dut_i[i] !== gen_tr.golden_i[i])_0  ~(mon_tr.dut_r[i] !== gen_tr.golden_r[i])
+  Row   4:          1  (mon_tr.dut_i[i] !== gen_tr.golden_i[i])_1  ~(mon_tr.dut_r[i] !== gen_tr.golden_r[i])
+
+
+
+=================================================================================
+=== File: driver.sv
+=================================================================================
+Statement Coverage:
+    Enabled Coverage            Active      Hits    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    Stmts                           46        46         0    100.00
+
+================================Statement Details================================
+
+Statement Coverage for file driver.sv --
+
+    1                                                package driver_pkg;
+    2                                                  import transaction_pkg::*;
+    3                                                
+    4                                                  class fft_driver;
+    5                                                    // Handle to interface 
+    6                                                    virtual fft_if.DRV vif;
+    7                                                    // Mailbox from generator
+    8                                                    mailbox #(fft_transaction) gen2drv;
+    9                                                    // Constructor
+    10                                                   function new(virtual fft_if.DRV vif,
+    11                                                                mailbox #(fft_transaction) gen2drv);
+    12              1                          1           this.vif     = vif;
+    13              1                          1           this.gen2drv = gen2drv;
+    14                                                   endfunction
+    15                                               
+    16                                                   // Apply reset 
+    17                                                   task apply_reset();
+    18              1                          1           $display("[DRIVER] Applying reset...");
+    19              1                          1           vif.rst_n <= 0;
+    20              1                          2           repeat (2) @(negedge vif.clk);
+    20              2                          2     
+    21              1                          1           vif.rst_n <= 1;
+    22              1                          1           $display("[DRIVER] Reset deasserted.");
+    23                                                   endtask
+    24                                               
+    25                                                   // Main run loop
+    26                                                   task run();
+    27                                                     fft_transaction tr;
+    28                                               
+    29                                                     // Initialize
+    30              1                          1           vif.rst_n <= 1;
+    31              1                          1           vif.in0_r <= 0; vif.in0_imag <= 0;
+    31              2                          1     
+    32              1                          1           vif.in1_r <= 0; vif.in1_imag <= 0;
+    32              2                          1     
+    33              1                          1           vif.in2_r <= 0; vif.in2_imag <= 0;
+    33              2                          1     
+    34              1                          1           vif.in3_r <= 0; vif.in3_imag <= 0;
+    34              2                          1     
+    35              1                          1           vif.in4_r <= 0; vif.in4_imag <= 0;
+    35              2                          1     
+    36              1                          1           vif.in5_r <= 0; vif.in5_imag <= 0;
+    36              2                          1     
+    37              1                          1           vif.in6_r <= 0; vif.in6_imag <= 0;
+    37              2                          1     
+    38              1                          1           vif.in7_r <= 0; vif.in7_imag <= 0;
+    38              2                          1     
+    39                                               
+    40                                                     // Apply reset
+    41              1                          1           apply_reset();
+    42                                               
+    43                                                     // Forever loop until generator finishes
+    44              1                          1           forever begin
+    45                                                       // Get next transaction
+    46              1                        103             gen2drv.get(tr);
+    47              1                        102             $display("[DRIVER] Driving transaction %0d", tr.id);
+    48                                                       // Apply inputs 
+    49              1                        102             vif.in0_r    <= tr.in_r[0];  vif.in0_imag <= tr.in_i[0];
+    49              2                        102     
+    50              1                        102             vif.in1_r    <= tr.in_r[1];  vif.in1_imag <= tr.in_i[1];
+    50              2                        102     
+    51              1                        102             vif.in2_r    <= tr.in_r[2];  vif.in2_imag <= tr.in_i[2];
+    51              2                        102     
+    52              1                        102             vif.in3_r    <= tr.in_r[3];  vif.in3_imag <= tr.in_i[3];
+    52              2                        102     
+    53              1                        102             vif.in4_r    <= tr.in_r[4];  vif.in4_imag <= tr.in_i[4];
+    53              2                        102     
+    54              1                        102             vif.in5_r    <= tr.in_r[5];  vif.in5_imag <= tr.in_i[5];
+    54              2                        102     
+    55              1                        102             vif.in6_r    <= tr.in_r[6];  vif.in6_imag <= tr.in_i[6];
+    55              2                        102     
+    56              1                        102             vif.in7_r    <= tr.in_r[7];  vif.in7_imag <= tr.in_i[7];
+    56              2                        102     
+    57              1                        102         @(negedge vif.clk);
+    58                                                     end
+    59                                                   endtask
+    60                                               
+    61                                                 endclass
+    62                                               endpackage
+
+
+=================================================================================
+=== File: enviroment.sv
+=================================================================================
+Statement Coverage:
+    Enabled Coverage            Active      Hits    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    Stmts                           14        14         0    100.00
+
+================================Statement Details================================
+
+Statement Coverage for file enviroment.sv --
+
+    1                                                package enviroment_pkg;
+    2                                                  import transaction_pkg::*;
+    3                                                  import driver_pkg::*;
+    4                                                  import generator_pkg::*;
+    5                                                  import monitor_pkg::*;
+    6                                                  import scoreboard_pkg::*;
+    7                                                    import coverage_pkg::*;
+    8                                                
+    9                                                  class fft_env;
+    10                                                   // Virtual interface handle
+    11                                                   virtual fft_if vif;
+    12                                                   // Components
+    13                                                   fft_generator  gen;
+    14                                                   fft_driver     drv;
+    15                                                   fft_monitor    mon;
+    16                                                   fft_scoreboard scb;
+    17                                                    fft_coverage   cov; 
+    18                                                   // Mailboxes
+    19                                                   mailbox #(fft_transaction) gen2drv;
+    20                                                   mailbox #(fft_transaction) gen2scb;
+    21                                                   mailbox #(fft_transaction) mon2scb;
+    22                                                   // Constructor
+    23                                                   function new(virtual fft_if vif);
+    24              1                          1           this.vif = vif;
+    25                                                     // Mailbox construction
+    26              1                          1           gen2drv = new();
+    27              1                          1           gen2scb = new();
+    28              1                          1           mon2scb = new();
+    29              1                          1             cov = new();               
+    30                                                     // Component construction
+    31              1                          1           gen = new(gen2drv, gen2scb);
+    32              1                          1           drv = new(vif.DRV, gen2drv);
+    33              1                          1           mon = new(vif.MON, mon2scb,fft_transaction::PIPELINE_LATENCY);
+    34              1                          1           scb = new(gen2scb, mon2scb);
+    35              1                          1           scb.set_cov(cov);          
+    36                                                   endfunction
+    37                                                   // Run everything in parallel
+    38                                                   task run();
+    39                                                     fork
+    40              1                          1             gen.run();
+    41              1                          1             drv.run();
+    42              1                          1             mon.run();
+    43              1                          1             scb.run();
+    44                                                     join_none
+    45                                                   endtask
+    46                                               
+    47                                                 endclass
+    48                                               endpackage
+
+
+=================================================================================
+=== File: fx_addsub.v
+=================================================================================
+Statement Coverage:
+    Enabled Coverage            Active      Hits    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    Stmts                            2         2         0    100.00
+
+================================Statement Details================================
+
+Statement Coverage for file fx_addsub.v --
+
+    1                                                // ============================================================================
+    2                                                // fxp_addsub.sv
+    3                                                // Fixed-Point Adder/Subtractor
+    4                                                //
+    5                                                // Adds or subtracts two signed fixed-point values with possibly different
+    6                                                // integer and fractional widths. Internally aligns both operands to a
+    7                                                // common format, performs addition/subtraction, then resizes (zoom) the
+    8                                                // result into the desired output format.
+    9                                                //
+    10                                               // Notes:
+    11                                               // - Operands are interpreted as two's complement.
+    12                                               // - Subtraction is performed via two’s complement negation of operand B.
+    13                                               // - fxp_zoom is used to align inputs to a common format and to resize
+    14                                               //   the final result with saturation/overflow handling.
+    15                                               // ============================================================================
+    16                                               module fxp_addsub #(
+    17                                                   // Operand A format
+    18                                                   parameter A_INT   = 7,   // integer bits for operand A
+    19                                                   parameter A_FRAC  = 5,   // fractional bits for operand A
+    20                                               
+    21                                                   // Operand B format
+    22                                                   parameter B_INT   = 7,   // integer bits for operand B
+    23                                                   parameter B_FRAC  = 5,   // fractional bits for operand B
+    24                                               
+    25                                                   // Output format
+    26                                                   parameter OUT_INT = 7,   // output integer bits
+    27                                                   parameter OUT_FRAC= 5,   // output fractional bits
+    28                                               
+    29                                                   // Rounding control
+    30                                                   parameter ROUNDING= 0    // enable rounding in_val final zoom
+    31                                                 )(
+    32                                                   input  wire [A_INT+A_FRAC-1:0] operand_a, // fixed-point input A
+    33                                                   input  wire [B_INT+B_FRAC-1:0] operand_b, // fixed-point input B
+    34                                                   input  wire                    subtract,  // 0 = add, 1 = subtract
+    35                                                   output wire [OUT_INT+OUT_FRAC-1:0] result, // fixed-point output
+    36                                                   output wire                    overflow   // overflow indicator
+    37                                                 );
+    38                                               
+    39                                                 // ==========================================================================
+    40                                                 // Step 1: Determine common internal widths
+    41                                                 // ==========================================================================
+    42                                                 localparam B_INT_EXT  = B_INT + 1;   // B extended by 1 integer bit (sign ext)
+    43                                                 localparam COMMON_INT = (A_INT > B_INT_EXT) ? A_INT : B_INT_EXT; // max integer
+    44                                                 localparam COMMON_FRAC= (A_FRAC > B_FRAC)   ? A_FRAC: B_FRAC;    // max fractional
+    45                                                 localparam RES_INT    = COMMON_INT + 1;  // add 1 more bit for carry/overflow
+    46                                                 localparam RES_FRAC   = COMMON_FRAC;     // fractional width remains same
+    47                                               
+    48                                                 // ==========================================================================
+    49                                                 // Step 2: Internal signals
+    50                                                 // ==========================================================================
+    51                                                 localparam [B_INT_EXT+B_FRAC-1:0] CONST_ONE = 1; // constant "1" for negation
+    52                                                 wire [B_INT_EXT+B_FRAC-1:0] operand_b_ext; // sign-extended version of operand B
+    53                                                 wire [COMMON_INT+COMMON_FRAC-1:0] operand_a_aligned; // operand A zoomed
+    54                                                 wire [COMMON_INT+COMMON_FRAC-1:0] operand_b_aligned; // operand B zoomed (after sub)
+    55                                                 wire [B_INT_EXT+B_FRAC-1:0] operand_b_negated;       // optional negated B
+    56                                               
+    57                                                 // ==========================================================================
+    58                                                 // Step 3: Subtraction handled as two's complement negation
+    59                                                 // ==========================================================================
+    60              1                       3294       assign operand_b_negated = subtract ? (~operand_b_ext) + CONST_ONE
+    61                                                        : operand_b_ext;
+    62                                               
+    63                                                 // ==========================================================================
+    64                                                 // Step 4: Perform signed addition
+    65                                                 // ==========================================================================
+    66              1                       6526       wire signed [RES_INT+RES_FRAC-1:0] res_sum =
+    67                                                      $signed(operand_a_aligned) + $signed(operand_b_aligned);
+    68                                               
+    69                                                 // ==========================================================================
+    70                                                 // Step 5: Input zooming/extension
+    71                                                 // ==========================================================================
+    72                                               
+    73                                                 // Extend operand B by one integer bit (sign extend)
+    74                                                 fxp_zoom #(
+    75                                                            .INPUT_INT  (B_INT),  .INPUT_FRAC    (B_FRAC),
+    76                                                            .OUTPUT_INT   (B_INT_EXT), .OUTPUT_FRAC (B_FRAC),
+    77                                                            .ROUNDING (0)
+    78                                                          ) b_extend (
+    79                                                            .in_val (operand_b),
+    80                                                            .out_val(operand_b_ext),
+    81                                                            .overflow()
+    82                                                          );
+    83                                               
+    84                                                 // Zoom operand A to common width (COMMON_INT:COMMON_FRAC)
+    85                                                 fxp_zoom #(
+    86                                                            .INPUT_INT    (A_INT),  .INPUT_FRAC  (A_FRAC),
+    87                                                            .OUTPUT_INT    (COMMON_INT), .OUTPUT_FRAC (COMMON_FRAC),
+    88                                                            .ROUNDING (0)
+    89                                                          ) a_zoom (
+    90                                                            .in_val (operand_a),
+    91                                                            .out_val(operand_a_aligned),
+    92                                                            .overflow()
+    93                                                          );
+    94                                               
+    95                                                 // Zoom operand B (possibly negated) to common width
+    96                                                 fxp_zoom #(
+    97                                                            .INPUT_INT    (B_INT_EXT), .INPUT_FRAC  (B_FRAC),
+    98                                                            .OUTPUT_INT    (COMMON_INT), .OUTPUT_FRAC (COMMON_FRAC),
+    99                                                            .ROUNDING (0)
+    100                                                         ) b_zoom (
+    101                                                           .in_val (operand_b_negated),
+    102                                                           .out_val(operand_b_aligned),
+    103                                                           .overflow()
+    104                                                         );
+    105                                              
+    106                                                // ==========================================================================
+    107                                                // Step 6: Final zoom of result to desired output width
+    108                                                // ==========================================================================
+    109                                                fxp_zoom #(
+    110                                                           .INPUT_INT    (RES_INT), .INPUT_FRAC  (RES_FRAC),
+    111                                                           .OUTPUT_INT    (OUT_INT), .OUTPUT_FRAC (OUT_FRAC),
+    112                                                           .ROUNDING (ROUNDING)
+    113                                                         ) result_zoom (
+    114                                                           .in_val (res_sum),
+    115                                                           .out_val(result),
+    116                                                           .overflow(overflow)
+    117                                                         );
+    118                                              
+    119                                              endmodule
+
+Branch Coverage:
+    Enabled Coverage            Active      Hits    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    Branches                         2         2         0    100.00
+
+================================Branch Details================================
+
+Branch Coverage for file fx_addsub.v --
+
+------------------------------------IF Branch------------------------------------
+    60                                      3262     Count coming in to IF
+    60              1                       1631       assign operand_b_negated = subtract ? (~operand_b_ext) + CONST_ONE
+    61              1                       1631              : operand_b_ext;
+Branch totals: 2 hits of 2 branches = 100.00%
+
+
+
+=================================================================================
+=== File: fx_format.v
+=================================================================================
+Statement Coverage:
+    Enabled Coverage            Active      Hits    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    Stmts                           27        23         4     85.18
+
+================================Statement Details================================
+
+Statement Coverage for file fx_format.v --
+
+    1                                                // =============================================================
+    2                                                // Fixed-point Zoomer (Resizer/Converter)
+    3                                                // Converts between two fixed-point formats (different integer
+    4                                                // and fractional bit widths). Supports rounding and overflow.
+    5                                                // =============================================================
+    6                                                module fxp_zoom #(
+    7                                                    // Input fixed-point format: 
+    8                                                    parameter INPUT_INT   = 8,   // Integer bits of input
+    9                                                    parameter INPUT_FRAC  = 8,   // Fractional bits of input
+    10                                               
+    11                                                   // Output fixed-point format: 
+    12                                                   parameter OUTPUT_INT  = 8,   // Integer bits of output
+    13                                                   parameter OUTPUT_FRAC = 8,   // Fractional bits of output
+    14                                               
+    15                                                   // Rounding control
+    16                                                   // 0 = truncate, 1 = round-to-nearest
+    17                                                   parameter ROUNDING    = 0
+    18                                               )(
+    19                                                   // Input fixed-point number 
+    20                                                   input  wire [INPUT_INT+INPUT_FRAC-1:0] in_val,
+    21                                               
+    22                                                   // Output fixed-point number
+    23                                                   output wire [OUTPUT_INT+OUTPUT_FRAC-1:0] out_val,
+    24                                               
+    25                                                   // Overflow flag (saturation occurred)
+    26                                                   output reg  overflow
+    27                                               );
+    28                                                 // ------------------------------------------------------------
+    29                                                 // Internal registers
+    30                                                 // ------------------------------------------------------------
+    31                                                 // Extended intermediate value after fractional adjustment
+    32              1                        152       reg [INPUT_INT+OUTPUT_FRAC-1:0] in_rescaled = 0;
+    33                                               
+    34                                                 // Integer part extracted from rescaled input
+    35              1                        152       reg [INPUT_INT-1:0] in_integer = 0;
+    36                                               
+    37                                                 // Final integer part for output
+    38              1                        152       reg [OUTPUT_INT-1:0] out_integer = 0;
+    39                                               
+    40                                                 // Final fractional part for output
+    41              1                        152       reg [OUTPUT_FRAC-1:0] out_fraction = 0;
+    42                                               
+    43                                                 // Initialize overflow to zero
+    44              1                        152       initial overflow = 1'b0;
+    45                                               
+    46                                                 // ------------------------------------------------------------
+    47                                                 // Step 1: Adjust fractional width
+    48                                                 // ------------------------------------------------------------
+    49                                                 // If OUTPUT_FRAC < INPUT_FRAC → must drop some fractional bits
+    50                                                 // If OUTPUT_FRAC > INPUT_FRAC → must pad zeros (increase precision)
+    51                                                 // If OUTPUT_FRAC == INPUT_FRAC → pass-through
+    52                                                 // ------------------------------------------------------------
+    53                                                 generate
+    54                                                   if (OUTPUT_FRAC < INPUT_FRAC) begin : reduce_fractional
+    55                                                     // Case: reducing fractional resolution
+    56                                                     if (ROUNDING == 0) begin
+    57                                                       // Truncate: simply drop lower bits
+    58              1                       5701             always @(*) in_rescaled = in_val[INPUT_INT+INPUT_FRAC-1 : INPUT_FRAC-OUTPUT_FRAC];
+    58              2                       5701     
+    59                                                     end
+    60                                                     else if (INPUT_INT+OUTPUT_FRAC >= 2) begin
+    61                                                       // Round to nearest
+    62                                                       always @(*) begin
+    63                                                         in_rescaled = in_val[INPUT_INT+INPUT_FRAC-1 : INPUT_FRAC-OUTPUT_FRAC];
+    64                                                         // Check rounding bit
+    65                                                         if (in_val[INPUT_FRAC-OUTPUT_FRAC-1] &
+    66                                                             ~(~in_rescaled[INPUT_INT+OUTPUT_FRAC-1] &
+    67                                                              (&in_rescaled[INPUT_INT+OUTPUT_FRAC-2:0])))
+    68                                                           in_rescaled = in_rescaled + 1; // round up
+    69                                                       end
+    70                                                     end
+    71                                                     else begin
+    72                                                       // Degenerate small-width case
+    73                                                       always @(*) begin
+    74                                                         in_rescaled = in_val[INPUT_INT+INPUT_FRAC-1 : INPUT_FRAC-OUTPUT_FRAC];
+    75                                                         if (in_val[INPUT_FRAC-OUTPUT_FRAC-1] & in_rescaled[INPUT_INT+OUTPUT_FRAC-1])
+    76                                                           in_rescaled = in_rescaled + 1; // round up negative numbers properly
+    77                                                       end
+    78                                                     end
+    79                                                   end
+    80                                                   else if (OUTPUT_FRAC == INPUT_FRAC) begin : same_fractional
+    81                                                     // Case: equal fractional resolution → direct assignment
+    82              1                      13860           always @(*) in_rescaled[INPUT_INT+OUTPUT_FRAC-1 : OUTPUT_FRAC-INPUT_FRAC] = in_val;
+    82              2                      13860     
+    83                                                   end
+    84                                                   else begin : increase_fractional
+    85                                                     // Case: increasing fractional resolution → pad with zeros
+    86                                                     always @(*) begin
+    87                                                       in_rescaled[INPUT_INT+OUTPUT_FRAC-1 : OUTPUT_FRAC-INPUT_FRAC] = in_val;
+    88                                                       in_rescaled[OUTPUT_FRAC-INPUT_FRAC-1 : 0] = 0;
+    89                                                     end
+    90                                                   end
+    91                                                 endgenerate
+    92                                               
+    93                                                 // ------------------------------------------------------------
+    94                                                 // Step 2: Adjust integer width (and detect overflow)
+    95                                                 // ------------------------------------------------------------
+    96                                                 // If OUTPUT_INT < INPUT_INT → possible overflow (saturation needed)
+    97                                                 // If OUTPUT_INT >= INPUT_INT → safe, just extend sign or zero
+    98                                                 // ------------------------------------------------------------
+    99                                               
+    100                                                generate
+    101                                                  if (OUTPUT_INT < INPUT_INT) begin : reduce_integer
+    102                                                    // Case: reducing integer range → check for overflow
+    103             1                       8949           always @(*) begin
+    104             1                       8949             {in_integer, out_fraction} = in_rescaled;
+    105                                              
+    106                                                      // Positive overflow detection:
+    107                                                      // If input is positive and higher bits don't fit
+    108                                                      if (~in_integer[INPUT_INT-1] & |in_integer[INPUT_INT-2:OUTPUT_INT-1]) begin
+    109             1                          1               overflow   = 1'b1;
+    110             1                          1               out_integer = {OUTPUT_INT{1'b1}};   // max positive
+    111             1                          1               out_integer[OUTPUT_INT-1] = 1'b0;   // clear sign
+    112             1                          1               out_fraction = {OUTPUT_FRAC{1'b1}}; // fractional max
+    113                                                      end
+    114                                                      // Negative overflow detection:
+    115                                                      // If input is negative and high bits are not all 1s
+    116                                                      else if (in_integer[INPUT_INT-1] & ~(&in_integer[INPUT_INT-2:OUTPUT_INT-1])) begin
+    117             1                    ***0***               overflow   = 1'b1;
+    118             1                    ***0***               out_integer = 0;
+    119             1                    ***0***               out_integer[OUTPUT_INT-1] = 1'b1;   // min negative
+    120             1                    ***0***               out_fraction = 0;
+    121                                                      end
+    122                                                      else begin
+    123                                                        // No overflow → safe fit
+    124             1                       8948               overflow = 1'b0;
+    125             1                       8948               out_integer = in_integer[OUTPUT_INT-1:0];
+    126                                                      end
+    127                                                    end
+    128                                                  end
+    129                                                  else begin : extend_integer
+    130                                                    // Case: extending integer width → safe, just sign-extend
+    131             1                      10612           always @(*) begin
+    132             1                      10612             {in_integer, out_fraction} = in_rescaled;
+    133             1                      10612             overflow = 1'b0;
+    134                                                      // If input is negative, fill extra bits with 1's
+    135             1                      10612             out_integer = in_integer[INPUT_INT-1] ? {OUTPUT_INT{1'b1}} : 0;
+    136             1                      10612             out_integer[INPUT_INT-1:0] = in_integer;
+    137                                                    end
+    138                                                  end
+    139                                                endgenerate
+    140                                              
+    141                                                // ------------------------------------------------------------
+    142                                                // Final concatenated output
+    143                                                // ------------------------------------------------------------
+    144             1                      19561       assign out_val = {out_integer, out_fraction};
+    145                                              
+    146                                              endmodule
+
+Branch Coverage:
+    Enabled Coverage            Active      Hits    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    Branches                         5         4         1     80.00
+
+================================Branch Details================================
+
+Branch Coverage for file fx_format.v --
+
+------------------------------------IF Branch------------------------------------
+    108                                     8949     Count coming in to IF
+    108             1                          1             if (~in_integer[INPUT_INT-1] & |in_integer[INPUT_INT-2:OUTPUT_INT-1]) begin
+    116             1                    ***0***             else if (in_integer[INPUT_INT-1] & ~(&in_integer[INPUT_INT-2:OUTPUT_INT-1])) begin
+    122             1                       8948             else begin
+Branch totals: 2 hits of 3 branches = 66.66%
+
+------------------------------------IF Branch------------------------------------
+    135                                    10612     Count coming in to IF
+    135             1                       5283             out_integer = in_integer[INPUT_INT-1] ? {OUTPUT_INT{1'b1}} : 0;
+    135             2                       5329             out_integer = in_integer[INPUT_INT-1] ? {OUTPUT_INT{1'b1}} : 0;
+Branch totals: 2 hits of 2 branches = 100.00%
+
+
+Condition Coverage:
+    Enabled Coverage            Active   Covered    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    FEC Condition Terms              8         2         6     25.00
+
+================================Condition Details================================
+
+Condition Coverage for file fx_format.v --
+
+----------------Focused Condition View-------------------
+Line       108 Item    1  (~in_integer[7] & in_integer[6])
+Condition totals: 0 of 2 input terms covered = 0.00%
+
+     Input Term   Covered  Reason for no coverage   Hint
+    -----------  --------  -----------------------  --------------
+  in_integer[7]         N  '_0' not hit             Hit '_0'
+  in_integer[6]         N  '_1' not hit             Hit '_1'
+
+     Rows:       Hits  FEC Target            Non-masking condition(s)      
+ ---------  ---------  --------------------  -------------------------     
+  Row   1:    ***0***  in_integer[7]_0       in_integer[6]                 
+  Row   2:         16  in_integer[7]_1       in_integer[6]                 
+  Row   3:         16  in_integer[6]_0       ~in_integer[7]                
+  Row   4:    ***0***  in_integer[6]_1       ~in_integer[7]                
+
+----------------Focused Condition View-------------------
+Line       108 Item    1  (~in_integer[8] & |in_integer[7:6])
+Condition totals: 2 of 2 input terms covered = 100.00%
+
+        Input Term   Covered  Reason for no coverage   Hint
+       -----------  --------  -----------------------  --------------
+     in_integer[8]         Y
+  |in_integer[7:6]         Y
+
+     Rows:       Hits  FEC Target            Non-masking condition(s)      
+ ---------  ---------  --------------------  -------------------------     
+  Row   1:          1  in_integer[8]_0       |in_integer[7:6]              
+  Row   2:         32  in_integer[8]_1       |in_integer[7:6]              
+  Row   3:         32  |in_integer[7:6]_0    ~in_integer[8]                
+  Row   4:          1  |in_integer[7:6]_1    ~in_integer[8]                
+
+----------------Focused Condition View-------------------
+Line       116 Item    1  (in_integer[8] & ~&in_integer[7:6])
+Condition totals: 0 of 2 input terms covered = 0.00%
+
+         Input Term   Covered  Reason for no coverage   Hint
+        -----------  --------  -----------------------  --------------
+      in_integer[8]         N  '_1' not hit             Hit '_1'
+  ~&in_integer[7:6]         N  '_1' not hit             Hit '_1'
+
+     Rows:       Hits  FEC Target            Non-masking condition(s)      
+ ---------  ---------  --------------------  -------------------------     
+  Row   1:         32  in_integer[8]_0       ~&in_integer[7:6]             
+  Row   2:    ***0***  in_integer[8]_1       ~&in_integer[7:6]             
+  Row   3:         32  ~&in_integer[7:6]_0   in_integer[8]                 
+  Row   4:    ***0***  ~&in_integer[7:6]_1   in_integer[8]                 
+
+----------------Focused Condition View-------------------
+Line       116 Item    1  (in_integer[7] & ~in_integer[6])
+Condition totals: 0 of 2 input terms covered = 0.00%
+
+     Input Term   Covered  Reason for no coverage   Hint
+    -----------  --------  -----------------------  --------------
+  in_integer[7]         N  '_1' not hit             Hit '_1'
+  in_integer[6]         N  '_0' not hit             Hit '_0'
+
+     Rows:       Hits  FEC Target            Non-masking condition(s)      
+ ---------  ---------  --------------------  -------------------------     
+  Row   1:         16  in_integer[7]_0       ~in_integer[6]                
+  Row   2:    ***0***  in_integer[7]_1       ~in_integer[6]                
+  Row   3:    ***0***  in_integer[6]_0       in_integer[7]                 
+  Row   4:         16  in_integer[6]_1       in_integer[7]                 
+
+
+
+=================================================================================
+=== File: fx_mul.v
+=================================================================================
+Statement Coverage:
+    Enabled Coverage            Active      Hits    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    Stmts                            1         1         0    100.00
+
+================================Statement Details================================
+
+Statement Coverage for file fx_mul.v --
+
+    1                                                // ============================================================================
+    2                                                // fxp_multiplier.sv
+    3                                                // Fixed-point multiplier wrapper
+    4                                                //
+    5                                                // Multiplies two signed fixed-point values and resizes the result.
+    6                                                // Uses fxp_zoom to adjust fractional precision and detect saturation.
+    7                                                //
+    8                                                // Notes:
+    9                                                // - Inputs are treated as two's complement (signed).
+    10                                               // - Result is sign-correct because multiplication uses $signed().
+    11                                               // - fxp_zoom handles fractional truncation/rounding and saturation.
+    12                                               // ============================================================================
+    13                                               module fxp_multiplier #(
+    14                                                   // Operand A format
+    15                                                   parameter A_INT   = 8,  // integer bits of operand A
+    16                                                   parameter A_FRAC  = 8,  // fractional bits of operand A
+    17                                               
+    18                                                   // Operand B format
+    19                                                   parameter B_INT   = 8,  // integer bits of operand B
+    20                                                   parameter B_FRAC  = 8,  // fractional bits of operand B
+    21                                               
+    22                                                   // Output format
+    23                                                   parameter OUT_INT = 8,  // integer bits of output (includes sign)
+    24                                                   parameter OUT_FRAC= 8,  // fractional bits of output
+    25                                               
+    26                                                   // Rounding control
+    27                                                   parameter ROUNDING= 0   // 0 = truncate, 1 = round-to-nearest
+    28                                                 )(
+    29                                                   // Fixed-point operands (two's complement encoded)
+    30                                                   input  wire [A_INT+A_FRAC-1:0] operand_a,
+    31                                                   input  wire [B_INT+B_FRAC-1:0] operand_b,
+    32                                               
+    33                                                   // Resized result
+    34                                                   output wire [OUT_INT+OUT_FRAC-1:0] result,
+    35                                               
+    36                                                   // Overflow indicator (set if saturation applied)
+    37                                                   output wire                        overflow
+    38                                                 );
+    39                                               
+    40                                                 // -------------------------
+    41                                                 // Step 1: Define intermediate raw product widths
+    42                                                 // -------------------------
+    43                                                 localparam PROD_INT  = A_INT + B_INT;   // integer part of raw product
+    44                                                 localparam PROD_FRAC = A_FRAC + B_FRAC; // fractional part of raw product
+    45                                               
+    46                                                 // -------------------------
+    47                                                 // Step 2: Perform signed multiplication
+    48                                                 // -------------------------
+    49                                                 // Inputs are cast to $signed() to ensure correct two's complement multiply.
+    50                                                 // The raw product "prod_raw" has PROD_INT + PROD_FRAC bits.
+    51              1                        840       wire signed [PROD_INT+PROD_FRAC-1:0] prod_raw =
+    52                                                      $signed(operand_a) * $signed(operand_b);
+    53                                               
+    54                                                 // -------------------------
+    55                                                 // Step 3: Resize using fxp_zoom
+    56                                                 // -------------------------
+    57                                                 // fxp_zoom will:
+    58                                                 //  - Align fractional bits (PROD_FRAC -> OUT_FRAC)
+    59                                                 //  - Round or truncate if needed
+    60                                                 //  - Detect integer overflow (PROD_INT -> OUT_INT)
+    61                                                 //  - Saturate on overflow
+    62                                                 fxp_zoom #(
+    63                                                            .INPUT_INT   (PROD_INT),   // input integer bits
+    64                                                            .INPUT_FRAC   (PROD_FRAC),  // input fractional bits
+    65                                                            .OUTPUT_INT   (OUT_INT),    // output integer bits
+    66                                                            .OUTPUT_FRAC   (OUT_FRAC),   // output fractional bits
+    67                                                            .ROUNDING (ROUNDING)    // rounding/truncation control
+    68                                                          ) resize_inst (
+    69                                                            .in_val       ( prod_raw) ,
+    70                                                            .out_val      ( result ),     // resized output
+    71                                                            .overflow ( overflow )        // overflow flag
+    72                                                          );
+    73                                               
+    74                                               endmodule
+
+
+=================================================================================
+=== File: generator.sv
+=================================================================================
+Statement Coverage:
+    Enabled Coverage            Active      Hits    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    Stmts                           23        23         0    100.00
+
+================================Statement Details================================
+
+Statement Coverage for file generator.sv --
+
+    1                                                package generator_pkg;
+    2                                                  import transaction_pkg::*;
+    3                                                
+    4                                                  class fft_generator;
+    5                                                
+    6                                                    // Mailboxes
+    7                                                    mailbox #(fft_transaction) gen2drv;
+    8                                                    mailbox #(fft_transaction) gen2scb;
+    9                                                
+    10                                                   // Parameters 
+    11                                                   localparam int VEC_LEN   = 8;
+    12                                                   localparam int IP_WIDTH  = 12;   // Q6.6
+    13                                                   localparam int OP_WIDTH  = 12;   // Q8.4
+    14                                                   localparam int MAX_LINES = 816;
+    15                                                   localparam int NUM_VECS  = MAX_LINES / VEC_LEN; 
+    16                                               
+    17                                                   // Memories for file contents
+    18                                                   bit signed [IP_WIDTH-1:0] input_mem_r [0:MAX_LINES-1];
+    19                                                   bit signed [IP_WIDTH-1:0] input_mem_i [0:MAX_LINES-1];
+    20                                                   bit signed [OP_WIDTH-1:0] golden_mem_r[0:MAX_LINES-1];
+    21                                                   bit signed [OP_WIDTH-1:0] golden_mem_i[0:MAX_LINES-1];
+    22                                               
+    23                                                   // constructor
+    24                                                   function new(mailbox #(fft_transaction) gen2drv,
+    25                                                                mailbox #(fft_transaction) gen2scb);
+    26              1                          1           this.gen2drv = gen2drv;
+    27              1                          1           this.gen2scb = gen2scb;
+    28                                                   endfunction
+    29                                               
+    30                                                   // Load memory files
+    31                                                   task load_mem();
+    32              1                          1           $readmemh("fft_inputs_real.mem",   input_mem_r);
+    33              1                          1           $readmemh("fft_inputs_imag.mem",   input_mem_i);
+    34              1                          1           $readmemh("fft_outputs_real.mem",  golden_mem_r);
+    35              1                          1           $readmemh("fft_outputs_imag.mem",  golden_mem_i);
+    36              1                          1           $display("[GENERATOR] Memory files loaded successfully.");
+    37                                                   endtask
+    38                                               
+    39                                                   // Main run task
+    40                                                   task run();
+    41                                                     fft_transaction tr;
+    42              1                          1           int mem_ptr = 0;
+    43                                               
+    44                                                     // Load files before running
+    45              1                          1           load_mem();
+    46                                               
+    47              1                          1           for (int vec = 0; vec < NUM_VECS; vec++) begin
+    47              2                        102     
+    48              1                        102             tr = new(vec); 
+    49              1                        102             $display("[GENERATOR] Generating transaction %0d", vec);
+    50              1                        102             for (int i = 0; i < VEC_LEN; i++) begin
+    50              2                        816     
+    51              1                        816               tr.in_r[i]     = input_mem_r[mem_ptr + i];
+    52              1                        816               tr.in_i[i]     = input_mem_i[mem_ptr + i];
+    53              1                        816               tr.golden_r[i] = golden_mem_r[mem_ptr + i];
+    54              1                        816               tr.golden_i[i] = golden_mem_i[mem_ptr + i];
+    55                                                       end
+    56              1                        102             mem_ptr += VEC_LEN;
+    57                                                       // Send to driver and scoreboard
+    58              1                        102             gen2drv.put(tr);
+    59              1                        102             gen2scb.put(tr);
+    60              1                        102             $display("[GENERATOR] Transaction %0d sent", vec);
+    61                                                     end
+    62                                                   endtask
+    63                                               
+    64                                                 endclass
+    65                                               endpackage
+
+
+=================================================================================
+=== File: monitor.sv
+=================================================================================
+Statement Coverage:
+    Enabled Coverage            Active      Hits    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    Stmts                           27        27         0    100.00
+
+================================Statement Details================================
+
+Statement Coverage for file monitor.sv --
+
+    1                                                package monitor_pkg;
+    2                                                  import transaction_pkg::*;
+    3                                                
+    4                                                  class fft_monitor;
+    5                                                    // Handle to interface 
+    6                                                    virtual fft_if.MON vif;
+    7                                                    // Mailbox to send completed transactions to scoreboard
+    8                                                    mailbox #(fft_transaction) mon2scb;
+    9                                                    // Pipeline latency 
+    10                                                   int PIPELINE_LATENCY;
+    11                                                   // Internal cycle counter
+    12                                                   int cycle_count;
+    13                                                   // Constructor
+    14                                                   function new(virtual fft_if.MON vif,
+    15                                                                mailbox #(fft_transaction) mon2scb,
+    16                                                                int PIPELINE_LATENCY = 6);
+    17              1                          1           this.vif              = vif;
+    18              1                          1           this.mon2scb          = mon2scb;
+    19              1                          1           this.PIPELINE_LATENCY = PIPELINE_LATENCY;
+    20              1                          1           cycle_count           = 0;
+    21                                                   endfunction
+    22                                                   // Main run task
+    23                                                   task run();
+    24                                                     fft_transaction tr;
+    25              1                          1           forever begin
+    26                                                       if (!vif.rst_n) begin
+    27              1                          1               cycle_count = 0;
+    28                                                       end else begin
+    29              1                        110               cycle_count++;
+    30                                                       end
+    31              1                        111             @(negedge vif.clk);
+    32                                                       // Wait until pipeline latency has passed
+    33                                                       if (cycle_count >= PIPELINE_LATENCY ) begin
+    34                                                         // Create new transaction container
+    35              1                        102               tr = new(cycle_count);
+    36                                                         // Capture DUT outputs 
+    37              1                        102               tr.dut_r[0] = vif.out0_r;  tr.dut_i[0] = vif.out0_imag;
+    37              2                        102     
+    38              1                        102               tr.dut_r[1] = vif.out1_r;  tr.dut_i[1] = vif.out1_imag;
+    38              2                        102     
+    39              1                        102               tr.dut_r[2] = vif.out2_r;  tr.dut_i[2] = vif.out2_imag;
+    39              2                        102     
+    40              1                        102               tr.dut_r[3] = vif.out3_r;  tr.dut_i[3] = vif.out3_imag;
+    40              2                        102     
+    41              1                        102               tr.dut_r[4] = vif.out4_r;  tr.dut_i[4] = vif.out4_imag;
+    41              2                        102     
+    42              1                        102               tr.dut_r[5] = vif.out5_r;  tr.dut_i[5] = vif.out5_imag;
+    42              2                        102     
+    43              1                        102               tr.dut_r[6] = vif.out6_r;  tr.dut_i[6] = vif.out6_imag;
+    43              2                        102     
+    44              1                        102               tr.dut_r[7] = vif.out7_r;  tr.dut_i[7] = vif.out7_imag;
+    44              2                        102     
+    45                                                         // Send transaction to scoreboard
+    46              1                        102               mon2scb.put(tr);
+    47              1                        102               $display("[MONITOR] Captured DUT outputs at cycle %0d", cycle_count);
+    48                                                       end
+    49                                                     end
+    50                                                   endtask
+    51                                               
+    52                                                 endclass
+    53                                               endpackage
+
+Branch Coverage:
+    Enabled Coverage            Active      Hits    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    Branches                         4         4         0    100.00
+
+================================Branch Details================================
+
+Branch Coverage for file monitor.sv --
+
+------------------------------------IF Branch------------------------------------
+    26                                       111     Count coming in to IF
+    26              1                          1             if (!vif.rst_n) begin
+    28              1                        110             end else begin
+Branch totals: 2 hits of 2 branches = 100.00%
+
+------------------------------------IF Branch------------------------------------
+    33                                       110     Count coming in to IF
+    33              1                        102             if (cycle_count >= PIPELINE_LATENCY ) begin
+                                               8     All False Count
+Branch totals: 2 hits of 2 branches = 100.00%
+
+
+Condition Coverage:
+    Enabled Coverage            Active   Covered    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    FEC Condition Terms              1         1         0    100.00
+
+================================Condition Details================================
+
+Condition Coverage for file monitor.sv --
+
+----------------Focused Condition View-------------------
+Line       33 Item    1  (this.cycle_count >= this.PIPELINE_LATENCY)
+Condition totals: 1 of 1 input term covered = 100.00%
+
+                                   Input Term   Covered  Reason for no coverage   Hint
+                                  -----------  --------  -----------------------  --------------
+  (this.cycle_count >= this.PIPELINE_LATENCY)         Y
+
+     Rows:       Hits  FEC Target                                     Non-masking condition(s)      
+ ---------  ---------  --------------------                           -------------------------     
+  Row   1:          1  (this.cycle_count >= this.PIPELINE_LATENCY)_0  -                             
+  Row   2:          1  (this.cycle_count >= this.PIPELINE_LATENCY)_1  -                             
+
+
+
+=================================================================================
+=== File: pipeline_stage.v
+=================================================================================
+Statement Coverage:
+    Enabled Coverage            Active      Hits    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    Stmts                           33        33         0    100.00
+
+================================Statement Details================================
+
+Statement Coverage for file pipeline_stage.v --
+
+    1                                                module pipeline_stage #(
+    2                                                    parameter WIDTH = 12,
+    3                                                    WI_INT   = 6,
+    4                                                    WI_FRAC  = WIDTH - WI_INT,
+    5                                                    WO_INT   = 8,
+    6                                                    WO_FRAC  = WIDTH - WO_INT,
+    7                                                    OP_WIDTH = WO_FRAC + WO_INT,
+    8                                                    TW_FRAC = 10,
+    9                                                    TW_IN = 2,
+    10                                                   IP_WIDTH = WI_FRAC + WI_INT
+    11                                                 )
+    12                                                 (
+    13                                                   input  wire clk,
+    14                                                   input  wire rst,
+    15                                                   input  wire [IP_WIDTH-1:0] in0_r,
+    16                                                   input  wire [IP_WIDTH-1:0] in0_i,
+    17                                                   input  wire [IP_WIDTH-1:0] in1_r,
+    18                                                   input  wire [IP_WIDTH-1:0] in1_i,
+    19                                                   input  wire [IP_WIDTH-1:0] in2_r,
+    20                                                   input  wire [IP_WIDTH-1:0] in2_i,
+    21                                                   input  wire [IP_WIDTH-1:0] in3_r,
+    22                                                   input  wire [IP_WIDTH-1:0] in3_i,
+    23                                                   input  wire [IP_WIDTH-1:0] in4_r,
+    24                                                   input  wire [IP_WIDTH-1:0] in4_i,
+    25                                                   input  wire [IP_WIDTH-1:0] in5_r,
+    26                                                   input  wire [IP_WIDTH-1:0] in5_i,
+    27                                                   input  wire [IP_WIDTH-1:0] in6_r,
+    28                                                   input  wire [IP_WIDTH-1:0] in6_i,
+    29                                                   input  wire [IP_WIDTH-1:0] in7_r,
+    30                                                   input  wire [IP_WIDTH-1:0] in7_i,
+    31                                               
+    32                                                   output reg  [OP_WIDTH-1:0] out0_r,
+    33                                                   output reg  [OP_WIDTH-1:0] out0_i,
+    34                                               
+    35                                                   output reg  [OP_WIDTH-1:0] out1_r,
+    36                                                   output reg  [OP_WIDTH-1:0] out1_i,
+    37                                                   output reg  [OP_WIDTH-1:0] out2_r,
+    38                                                   output reg  [OP_WIDTH-1:0] out2_i,
+    39                                                   output reg  [OP_WIDTH-1:0] out3_r,
+    40                                                   output reg  [OP_WIDTH-1:0] out3_i,
+    41                                                   output reg  [OP_WIDTH-1:0] out4_r,
+    42                                                   output reg  [OP_WIDTH-1:0] out4_i,
+    43                                                   output reg  [OP_WIDTH-1:0] out5_r,
+    44                                                   output reg  [OP_WIDTH-1:0] out5_i,
+    45                                                   output reg  [OP_WIDTH-1:0] out6_r,
+    46                                                   output reg  [OP_WIDTH-1:0] out6_i,
+    47                                                   output reg  [OP_WIDTH-1:0] out7_r,
+    48                                                   output reg  [OP_WIDTH-1:0] out7_i
+    49                                                 );
+    50              1                        423       always @ (posedge clk or negedge rst)
+    51                                                 begin
+    52                                                   if(!rst)
+    53                                                   begin
+    54              1                          8           out0_r  <= 0;
+    55              1                          8           out0_i  <= 0;
+    56              1                          8           out1_r  <= 0;
+    57              1                          8           out1_i  <= 0;
+    58              1                          8           out2_r  <= 0;
+    59              1                          8           out2_i  <= 0;
+    60              1                          8           out3_r  <= 0;
+    61              1                          8           out3_i  <= 0;
+    62              1                          8           out4_r  <= 0;
+    63              1                          8           out4_i  <= 0;
+    64              1                          8           out5_r  <= 0;
+    65              1                          8           out5_i  <= 0;
+    66              1                          8           out6_r  <= 0;
+    67              1                          8           out6_i  <= 0;
+    68              1                          8           out7_r  <= 0;
+    69              1                          8           out7_i  <= 0;
+    70                                                   end
+    71                                                   else
+    72                                                   begin
+    73              1                        415           out0_r  <= in0_r;
+    74              1                        415           out0_i  <= in0_i;
+    75              1                        415           out1_r  <= in1_r;
+    76              1                        415           out1_i  <= in1_i;
+    77              1                        415           out2_r  <= in2_r;
+    78              1                        415           out2_i  <= in2_i;
+    79              1                        415           out3_r  <= in3_r;
+    80              1                        415           out3_i  <= in3_i;
+    81              1                        415           out4_r  <= in4_r;
+    82              1                        415           out4_i  <= in4_i;
+    83              1                        415           out5_r  <= in5_r;
+    84              1                        415           out5_i  <= in5_i;
+    85              1                        415           out6_r  <= in6_r;
+    86              1                        415           out6_i  <= in6_i;
+    87              1                        415           out7_r  <= in7_r;
+    88              1                        415           out7_i  <= in7_i;
+    89                                                   end
+    90                                                 end //always
+    91                                               endmodule
+
+Branch Coverage:
+    Enabled Coverage            Active      Hits    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    Branches                         2         2         0    100.00
+
+================================Branch Details================================
+
+Branch Coverage for file pipeline_stage.v --
+
+------------------------------------IF Branch------------------------------------
+    52                                       423     Count coming in to IF
+    52              1                          8         if(!rst)
+    71              1                        415         else
+Branch totals: 2 hits of 2 branches = 100.00%
+
+
+
+=================================================================================
+=== File: scoreboard.sv
+=================================================================================
+Statement Coverage:
+    Enabled Coverage            Active      Hits    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    Stmts                           18        18         0    100.00
+
+================================Statement Details================================
+
+Statement Coverage for file scoreboard.sv --
+
+    1                                                package scoreboard_pkg;
+    2                                                  import transaction_pkg::*;
+    3                                                    import coverage_pkg::*;
+    4                                                
+    5                                                  class fft_scoreboard;
+    6                                                  // Parameters
+    7                                                  parameter WIDTH = 12;
+    8                                                  parameter WI_INT   = 6;
+    9                                                  parameter WI_FRAC  = WIDTH - WI_INT;
+    10                                                 parameter WO_INT   = 8;
+    11                                                 parameter WO_FRAC  = WIDTH - WO_INT;
+    12                                               
+    13                                                   // Mailboxes: from generator and monitor
+    14                                                   mailbox #(fft_transaction) gen2scb;
+    15                                                   mailbox #(fft_transaction) mon2scb;
+    16                                                   fft_coverage cov;
+    17                                                   // Constructor
+    18                                                   function new(mailbox #(fft_transaction) gen2scb,
+    19                                                                mailbox #(fft_transaction) mon2scb);
+    20              1                          1           this.gen2scb = gen2scb;
+    21              1                          1           this.mon2scb = mon2scb;
+    22                                                   endfunction
+    23                                               
+    24                                                   function void set_cov(fft_coverage c);
+    25              1                          1           cov = c;
+    26                                                   endfunction
+    27                                               
+    28                                                   // Run loop
+    29                                                   task run();
+    30                                                     fft_transaction gen_tr, mon_tr;
+    31              1                          1           forever begin
+    32                                                       // Get input+golden transaction from generator
+    33              1                        103             gen2scb.get(gen_tr);
+    34                                                       // Get DUT output transaction from monitor
+    35              1                        102             mon2scb.get(mon_tr);
+    36                                                       // Compare DUT vs golden
+    37              1                        102             compare(gen_tr, mon_tr);
+    38                                                     end
+    39                                                   endtask
+    40                                               
+    41                                               // Comparison task
+    42                                               task compare(fft_transaction gen_tr, fft_transaction mon_tr);
+    43              1                        102       $display("\n[SCB] Comparing transaction %0d", gen_tr.id);
+    44                                                 // Table header
+    45              1                        102       $display("Idx |           Input            |           DUT(out)           |          Golden(out)");
+    46              1                        102       $display("----------------------------------------------------------------------------------------");
+    47              1                        102       for (int i = 0; i < fft_transaction::VEC_LEN; i++) begin
+    47              2                        816     
+    48              1                        816         $display("%2d  | (%10.6f + j%10.6f) | (%10.4f + j%10.4f) | (%10.4f + j%10.4f)",
+    49                                                            i,
+    50                                                            // Input
+    51                                                            gen_tr.in_r[i]/(1.0 * (1 << WI_FRAC)),
+    52                                                            gen_tr.in_i[i]/(1.0 * (1 << WI_FRAC)),
+    53                                               
+    54                                                            // DUT output
+    55                                                            mon_tr.dut_r[i]/(1.0 * (1 << WO_FRAC)),
+    56                                                            mon_tr.dut_i[i]/(1.0 * (1 << WO_FRAC)),
+    57                                               
+    58                                                            // Golden output
+    59                                                            gen_tr.golden_r[i]/(1.0 * (1 << WO_FRAC)),
+    60                                                            gen_tr.golden_i[i]/(1.0 * (1 << WO_FRAC)));
+    61                                                 end
+    62                                                 // Sample coverage if enabled
+    63                                                 if (cov) begin
+    64              1                        102         cov.sample_inputs(gen_tr);
+    65              1                        102         cov.sample_outputs(mon_tr);
+    66              1                        102         cov.sample_compare(gen_tr, mon_tr);
+    67                                                 end
+    68              1                        102       $display("----------------------------------------------------------------------------------------");
+    69              1                        102       $display("[SCB] Transaction %0d complete.\n", gen_tr.id);
+    70                                               endtask
+    71                                                 endclass
+    72                                               endpackage
+
+Branch Coverage:
+    Enabled Coverage            Active      Hits    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    Branches                         2         1         1     50.00
+
+================================Branch Details================================
+
+Branch Coverage for file scoreboard.sv --
+
+------------------------------------IF Branch------------------------------------
+    63                                       102     Count coming in to IF
+    63              1                        102       if (cov) begin
+                                         ***0***     All False Count
+Branch totals: 1 hit of 2 branches = 50.00%
+
+
+
+=================================================================================
+=== File: top.sv
+=================================================================================
+Statement Coverage:
+    Enabled Coverage            Active      Hits    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    Stmts                            8         8         0    100.00
+
+================================Statement Details================================
+
+Statement Coverage for file top.sv --
+
+    1                                                `timescale 1ns/1ps
+    2                                                // =====================
+    3                                                // Top testbench
+    4                                                // =====================
+    5                                                import transaction_pkg::*;
+    6                                                import generator_pkg::*;
+    7                                                import driver_pkg::*;
+    8                                                import monitor_pkg::*;
+    9                                                import scoreboard_pkg::*;
+    10                                               import enviroment_pkg::*;
+    11                                               
+    12                                               module fft_tb;
+    13                                                 // Clock
+    14                                                 bit clk;
+    15              1                          1       initial clk = 0;
+    16              1                        220       always #5 clk = ~clk;
+    16              2                        219     
+    17                                                 // Interface instance 
+    18                                                 fft_if fft_if0 (.clk(clk));
+    19                                                 // DUT instance 
+    20                                                 fft_top #(
+    21                                                   .WIDTH(12),
+    22                                                   .WI_INT(6)
+    23                                                 ) DUT (
+    24                                                   .clk        (fft_if0.clk),
+    25                                                   .rst_n      (fft_if0.rst_n),
+    26                                                   // Inputs
+    27                                                   .in0_r      (fft_if0.in0_r),
+    28                                                   .in1_r      (fft_if0.in1_r),
+    29                                                   .in2_r      (fft_if0.in2_r),
+    30                                                   .in3_r      (fft_if0.in3_r),
+    31                                                   .in4_r      (fft_if0.in4_r),
+    32                                                   .in5_r      (fft_if0.in5_r),
+    33                                                   .in6_r      (fft_if0.in6_r),
+    34                                                   .in7_r      (fft_if0.in7_r),
+    35                                                   .in0_imag   (fft_if0.in0_imag),
+    36                                                   .in1_imag   (fft_if0.in1_imag),
+    37                                                   .in2_imag   (fft_if0.in2_imag),
+    38                                                   .in3_imag   (fft_if0.in3_imag),
+    39                                                   .in4_imag   (fft_if0.in4_imag),
+    40                                                   .in5_imag   (fft_if0.in5_imag),
+    41                                                   .in6_imag   (fft_if0.in6_imag),
+    42                                                   .in7_imag   (fft_if0.in7_imag),
+    43                                                   // Outputs
+    44                                                   .out0_r     (fft_if0.out0_r),
+    45                                                   .out1_r     (fft_if0.out1_r),
+    46                                                   .out2_r     (fft_if0.out2_r),
+    47                                                   .out3_r     (fft_if0.out3_r),
+    48                                                   .out4_r     (fft_if0.out4_r),
+    49                                                   .out5_r     (fft_if0.out5_r),
+    50                                                   .out6_r     (fft_if0.out6_r),
+    51                                                   .out7_r     (fft_if0.out7_r),
+    52                                                   .out0_imag  (fft_if0.out0_imag),
+    53                                                   .out1_imag  (fft_if0.out1_imag),
+    54                                                   .out2_imag  (fft_if0.out2_imag),
+    55                                                   .out3_imag  (fft_if0.out3_imag),
+    56                                                   .out4_imag  (fft_if0.out4_imag),
+    57                                                   .out5_imag  (fft_if0.out5_imag),
+    58                                                   .out6_imag  (fft_if0.out6_imag),
+    59                                                   .out7_imag  (fft_if0.out7_imag)
+    60                                                 );
+    61                                                 // Environment
+    62                                                 fft_env env;
+    63                                                 initial begin
+    64              1                          1         env = new(fft_if0);
+    65              1                          1         env.run();
+    66                                                   // let the scoreboard decide
+    67              1                          1         #1100
+    68              1                          1         $display("[TB] Simulation finished.");
+    69              1                          1          $finish;
+    70                                                 end
+    71                                               endmodule
+
+
+=================================================================================
+=== File: transaction.sv
+=================================================================================
+Statement Coverage:
+    Enabled Coverage            Active      Hits    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    Stmts                            1         1         0    100.00
+
+================================Statement Details================================
+
+Statement Coverage for file transaction.sv --
+
+    1                                                package transaction_pkg;
+    2                                                
+    3                                                  class fft_transaction;
+    4                                                
+    5                                                    // Parameters
+    6                                                    localparam int VEC_LEN   = 8;
+    7                                                    localparam int IP_WIDTH  = 12;
+    8                                                    localparam int OP_WIDTH  = 12;
+    9                                                    localparam int PIPELINE_LATENCY  = 6;
+    10                                               
+    11                                                   int id;  // vector number
+    12                                               
+    13                                                   // input samples
+    14                                                   bit signed [IP_WIDTH-1:0] in_r [VEC_LEN];
+    15                                                   bit signed [IP_WIDTH-1:0] in_i [VEC_LEN];
+    16                                               
+    17                                                   // Golden reference
+    18                                                   bit signed [OP_WIDTH-1:0] golden_r [VEC_LEN];
+    19                                                   bit signed [OP_WIDTH-1:0] golden_i [VEC_LEN];
+    20                                               
+    21                                                   // DUT captured outputs
+    22                                                   bit signed [OP_WIDTH-1:0] dut_r [VEC_LEN];
+    23                                                   bit signed [OP_WIDTH-1:0] dut_i [VEC_LEN];
+    24                                               
+    25                                                   function new(int id = 0);
+    26              1                        204           this.id = id;
+    27                                                   endfunction
+    28                                               
+    29                                                 endclass
+    30                                               
+    31                                               endpackage
+
+
+COVERGROUP COVERAGE:
+-----------------------------------------------------------------------------------------------
+Covergroup                                             Metric       Goal    Status               
+                                                                                              
+-----------------------------------------------------------------------------------------------
+ TYPE /coverage_pkg/fft_coverage/cg_inputs            100.00%        100    Covered              
+    covered/total bins:                                    22         22                      
+    missing/total bins:                                     0         22                      
+    % Hit:                                            100.00%        100                      
+    Coverpoint cg_inputs::idx_cp                      100.00%        100    Covered              
+        covered/total bins:                                 8          8                      
+        missing/total bins:                                 0          8                      
+        % Hit:                                        100.00%        100                      
+        bin lanes[0]                                      102          1    Covered              
+        bin lanes[1]                                      102          1    Covered              
+        bin lanes[2]                                      102          1    Covered              
+        bin lanes[3]                                      102          1    Covered              
+        bin lanes[4]                                      102          1    Covered              
+        bin lanes[5]                                      102          1    Covered              
+        bin lanes[6]                                      102          1    Covered              
+        bin lanes[7]                                      102          1    Covered              
+    Coverpoint cg_inputs::in_r_val                    100.00%        100    Covered              
+        covered/total bins:                                 7          7                      
+        missing/total bins:                                 0          7                      
+        % Hit:                                        100.00%        100                      
+        bin zero                                            2          1    Covered              
+        bin small_pos                                       5          1    Covered              
+        bin small_neg                                       7          1    Covered              
+        bin mid_pos                                        30          1    Covered              
+        bin mid_neg                                        25          1    Covered              
+        bin large_pos                                     371          1    Covered              
+        bin large_neg                                     376          1    Covered              
+    Coverpoint cg_inputs::in_i_val                    100.00%        100    Covered              
+        covered/total bins:                                 7          7                      
+        missing/total bins:                                 0          7                      
+        % Hit:                                        100.00%        100                      
+        bin zero                                           17          1    Covered              
+        bin small_pos                                       3          1    Covered              
+        bin small_neg                                       4          1    Covered              
+        bin mid_pos                                        28          1    Covered              
+        bin mid_neg                                        23          1    Covered              
+        bin large_pos                                     366          1    Covered              
+        bin large_neg                                     375          1    Covered              
+ Covergroup instance \/coverage_pkg::fft_coverage::cg_inputs  
+                                                      100.00%        100    Covered              
+    covered/total bins:                                    22         22                      
+    missing/total bins:                                     0         22                      
+    % Hit:                                            100.00%        100                      
+    Coverpoint idx_cp                                 100.00%        100    Covered              
+        covered/total bins:                                 8          8                      
+        missing/total bins:                                 0          8                      
+        % Hit:                                        100.00%        100                      
+        bin lanes[0]                                      102          1    Covered              
+        bin lanes[1]                                      102          1    Covered              
+        bin lanes[2]                                      102          1    Covered              
+        bin lanes[3]                                      102          1    Covered              
+        bin lanes[4]                                      102          1    Covered              
+        bin lanes[5]                                      102          1    Covered              
+        bin lanes[6]                                      102          1    Covered              
+        bin lanes[7]                                      102          1    Covered              
+    Coverpoint in_r_val                               100.00%        100    Covered              
+        covered/total bins:                                 7          7                      
+        missing/total bins:                                 0          7                      
+        % Hit:                                        100.00%        100                      
+        bin zero                                            2          1    Covered              
+        bin small_pos                                       5          1    Covered              
+        bin small_neg                                       7          1    Covered              
+        bin mid_pos                                        30          1    Covered              
+        bin mid_neg                                        25          1    Covered              
+        bin large_pos                                     371          1    Covered              
+        bin large_neg                                     376          1    Covered              
+    Coverpoint in_i_val                               100.00%        100    Covered              
+        covered/total bins:                                 7          7                      
+        missing/total bins:                                 0          7                      
+        % Hit:                                        100.00%        100                      
+        bin zero                                           17          1    Covered              
+        bin small_pos                                       3          1    Covered              
+        bin small_neg                                       4          1    Covered              
+        bin mid_pos                                        28          1    Covered              
+        bin mid_neg                                        23          1    Covered              
+        bin large_pos                                     366          1    Covered              
+        bin large_neg                                     375          1    Covered              
+ TYPE /coverage_pkg/fft_coverage/cg_outputs           100.00%        100    Covered              
+    covered/total bins:                                    14         14                      
+    missing/total bins:                                     0         14                      
+    % Hit:                                            100.00%        100                      
+    Coverpoint cg_outputs::idx_cp                     100.00%        100    Covered              
+        covered/total bins:                                 8          8                      
+        missing/total bins:                                 0          8                      
+        % Hit:                                        100.00%        100                      
+        bin lanes[0]                                      102          1    Covered              
+        bin lanes[1]                                      102          1    Covered              
+        bin lanes[2]                                      102          1    Covered              
+        bin lanes[3]                                      102          1    Covered              
+        bin lanes[4]                                      102          1    Covered              
+        bin lanes[5]                                      102          1    Covered              
+        bin lanes[6]                                      102          1    Covered              
+        bin lanes[7]                                      102          1    Covered              
+    Coverpoint cg_outputs::out_r_val                  100.00%        100    Covered              
+        covered/total bins:                                 3          3                      
+        missing/total bins:                                 0          3                      
+        % Hit:                                        100.00%        100                      
+        bin zero                                            5          1    Covered              
+        bin pos                                           386          1    Covered              
+        bin neg                                           425          1    Covered              
+    Coverpoint cg_outputs::out_i_val                  100.00%        100    Covered              
+        covered/total bins:                                 3          3                      
+        missing/total bins:                                 0          3                      
+        % Hit:                                        100.00%        100                      
+        bin zero                                            7          1    Covered              
+        bin pos                                           401          1    Covered              
+        bin neg                                           408          1    Covered              
+ Covergroup instance \/coverage_pkg::fft_coverage::cg_outputs  
+                                                      100.00%        100    Covered              
+    covered/total bins:                                    14         14                      
+    missing/total bins:                                     0         14                      
+    % Hit:                                            100.00%        100                      
+    Coverpoint idx_cp                                 100.00%        100    Covered              
+        covered/total bins:                                 8          8                      
+        missing/total bins:                                 0          8                      
+        % Hit:                                        100.00%        100                      
+        bin lanes[0]                                      102          1    Covered              
+        bin lanes[1]                                      102          1    Covered              
+        bin lanes[2]                                      102          1    Covered              
+        bin lanes[3]                                      102          1    Covered              
+        bin lanes[4]                                      102          1    Covered              
+        bin lanes[5]                                      102          1    Covered              
+        bin lanes[6]                                      102          1    Covered              
+        bin lanes[7]                                      102          1    Covered              
+    Coverpoint out_r_val                              100.00%        100    Covered              
+        covered/total bins:                                 3          3                      
+        missing/total bins:                                 0          3                      
+        % Hit:                                        100.00%        100                      
+        bin zero                                            5          1    Covered              
+        bin pos                                           386          1    Covered              
+        bin neg                                           425          1    Covered              
+    Coverpoint out_i_val                              100.00%        100    Covered              
+        covered/total bins:                                 3          3                      
+        missing/total bins:                                 0          3                      
+        % Hit:                                        100.00%        100                      
+        bin zero                                            7          1    Covered              
+        bin pos                                           401          1    Covered              
+        bin neg                                           408          1    Covered              
+ TYPE /coverage_pkg/fft_coverage/cg_match             100.00%        100    Covered              
+    covered/total bins:                                    10         10                      
+    missing/total bins:                                     0         10                      
+    % Hit:                                            100.00%        100                      
+    Coverpoint cg_match::idx_cp                       100.00%        100    Covered              
+        covered/total bins:                                 8          8                      
+        missing/total bins:                                 0          8                      
+        % Hit:                                        100.00%        100                      
+        bin lanes[0]                                      102          1    Covered              
+        bin lanes[1]                                      102          1    Covered              
+        bin lanes[2]                                      102          1    Covered              
+        bin lanes[3]                                      102          1    Covered              
+        bin lanes[4]                                      102          1    Covered              
+        bin lanes[5]                                      102          1    Covered              
+        bin lanes[6]                                      102          1    Covered              
+        bin lanes[7]                                      102          1    Covered              
+    Coverpoint cg_match::result_cp                    100.00%        100    Covered              
+        covered/total bins:                                 2          2                      
+        missing/total bins:                                 0          2                      
+        % Hit:                                        100.00%        100                      
+        bin MATCH                                         223          1    Covered              
+        bin MISMATCH                                      593          1    Covered              
+ Covergroup instance \/coverage_pkg::fft_coverage::cg_match  
+                                                      100.00%        100    Covered              
+    covered/total bins:                                    10         10                      
+    missing/total bins:                                     0         10                      
+    % Hit:                                            100.00%        100                      
+    Coverpoint idx_cp                                 100.00%        100    Covered              
+        covered/total bins:                                 8          8                      
+        missing/total bins:                                 0          8                      
+        % Hit:                                        100.00%        100                      
+        bin lanes[0]                                      102          1    Covered              
+        bin lanes[1]                                      102          1    Covered              
+        bin lanes[2]                                      102          1    Covered              
+        bin lanes[3]                                      102          1    Covered              
+        bin lanes[4]                                      102          1    Covered              
+        bin lanes[5]                                      102          1    Covered              
+        bin lanes[6]                                      102          1    Covered              
+        bin lanes[7]                                      102          1    Covered              
+    Coverpoint result_cp                              100.00%        100    Covered              
+        covered/total bins:                                 2          2                      
+        missing/total bins:                                 0          2                      
+        % Hit:                                        100.00%        100                      
+        bin MATCH                                         223          1    Covered              
+        bin MISMATCH                                      593          1    Covered              
+
+TOTAL COVERGROUP COVERAGE: 100.00%  COVERGROUP TYPES: 3
+
+Total Coverage By File (code coverage only, filtered view): 80.67%
+
