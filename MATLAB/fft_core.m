@@ -1,6 +1,4 @@
 function Xk = fft_core(x_in) %#codegen
-% 8-point FFT core, radix-2 DIT
-% Fixed-point 
 
     % ---- Type table ----
     T = fft_core_types('fixed');
@@ -23,7 +21,7 @@ function Xk = fft_core(x_in) %#codegen
     disp(x_in);
 
     % ---- Bit reversal ----
-    x = bit_reversal_zero_based(x_in, T.x); % keep fixed-point type
+    x = bit_reversal_zero_based(x_in, T.x); 
     fprintf('Bit-reversed order:\n');
     disp(x);
 
@@ -75,7 +73,7 @@ end
 function x_reordered = bit_reversal_zero_based(x_in, xtype)
     N = length(x_in);
     num_bits = log2(N);
-    x_reordered = xtype; % preserve fixed-point type
+    x_reordered = xtype;
     for n = 0:N-1
         bin_str = dec2bin(n, num_bits);
         bin_rev = bin_str(end:-1:1);

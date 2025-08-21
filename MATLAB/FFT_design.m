@@ -1,7 +1,7 @@
 clear; clc; close all;
 
 % =====================[ Create Type Table ]=====================
-T = fft_core_types('fixed');  % or 'single' for single precision
+T = fft_core_types('fixed');  
 
 % =====================[ Randomized Test Cases ]==================
 nseeds = 100;
@@ -18,8 +18,8 @@ for seed = 1:nseeds
     test_inputs{seed} = cast(10*randn(1,8) + 10*1i*randn(1,8), 'like', T.x);
 end
 
-% =====================[ Run Tests with Verification ]============
-errors = zeros(1, nseeds);   % store error % for plotting
+% =====================[ Run Tests]============
+errors = zeros(1, nseeds);   % store error for plotting
 sqnr_vals = zeros(1, nseeds); % store SQNR (dB) for plotting
 
 for t = 1:nseeds
@@ -127,7 +127,7 @@ fprintf('Average SQNR: %.2f dB\n', avg_sqnr);
 showInstrumentationResults fft_core_mex;
 
 % ================================================================
-% ===== Extra Part: Save Inputs & Outputs for Verilog ============
+% =====  Save Inputs & Outputs  ============
 % ================================================================
 INPUT_FRAC = 6;   % Q6.6
 OUTPUT_FRAC = 4;  % Q8.4
@@ -143,21 +143,20 @@ f_out_i = fopen('fft_outputs_imag.mem','w');
 
 for t = 1:nseeds
     x = double(test_inputs{t});
-    y = double(test_outputs_builtin{t}); % MATLAB reference
+    y = double(test_outputs_builtin{t}); 
     
-    % Quantize inputs (Q6.6)
+    % inputs (Q6.6)
     xr_q = round(real(x)*2^INPUT_FRAC);
     xi_q = round(imag(x)*2^INPUT_FRAC);
     xr_q = min(max(xr_q, min_val), max_val);
     xi_q = min(max(xi_q, min_val), max_val);
 
-    % Quantize outputs (Q8.4)
+    % outputs (Q8.4)
     yr_q = round(real(y)*2^OUTPUT_FRAC);
     yi_q = round(imag(y)*2^OUTPUT_FRAC);
     yr_q = min(max(yr_q, min_val), max_val);
     yi_q = min(max(yi_q, min_val), max_val);
 
-    % Write each of 8 samples
     for k = 1:8
         fprintf(f_in_r,  '%03X\n', mod(xr_q(k), 2^WORD_LEN));
         fprintf(f_in_i,  '%03X\n', mod(xi_q(k), 2^WORD_LEN));
@@ -166,7 +165,7 @@ for t = 1:nseeds
     end
 end
 
-% Save directed tests too
+% Save directed tests 
 for k = 1:length(directed_tests)
     x = double(directed_tests{k});
     y = double(directed_outputs_builtin{k});
@@ -201,4 +200,4 @@ save('fft_test_vectors_fixed.mat', ...
      'test_inputs','test_outputs_builtin','test_outputs_custom', ...
      'directed_tests','directed_outputs_builtin','directed_outputs_custom');
 
-disp('✅ Saved random + directed test vectors in Q6.6/Q8.4 (hex for Verilog + .mat for MATLAB).');
+disp(' Saved random + directed test vectors in Q6.6/Q8.4 (hex for Verilog + .mat for MATLAB).');
